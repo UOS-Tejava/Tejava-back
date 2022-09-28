@@ -1,5 +1,6 @@
 package com.sogong.tejava.entity;
 
+import com.sogong.tejava.converter.RoleConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,10 +26,14 @@ public class User {
     private String pwd;
     private String name;
     private String address;
+
+    @Convert(converter = RoleConverter.class)
     private Role role;
+
     private Boolean phoneCheck;
+    private Boolean agreement;
 
     @OneToMany(targetEntity = OrderHistory.class) // Many = OrderHistory, = One 한명의 유저는 여러 개의 주문 내역을 갖고 있다.
-    @JoinColumn(name="uo_fk", referencedColumnName = "id") // foreign key (userId) references User (id)
+    @JoinColumn(name = "uo_fk", referencedColumnName = "id") // foreign key (userId) references User (id)
     private List<OrderHistory> orderHistories;
 }

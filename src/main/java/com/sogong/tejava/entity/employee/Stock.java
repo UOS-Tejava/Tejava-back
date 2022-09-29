@@ -1,6 +1,5 @@
 package com.sogong.tejava.entity.employee;
 
-import com.sogong.tejava.entity.Option;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;

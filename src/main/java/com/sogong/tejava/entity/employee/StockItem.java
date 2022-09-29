@@ -23,5 +23,5 @@ public class StockItem {
 
     private String itemNm;
     private String imagePath;
-    private String quantity;
+    private Integer quantity;
 }

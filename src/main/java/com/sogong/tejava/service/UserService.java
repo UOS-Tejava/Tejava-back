@@ -4,6 +4,7 @@ import com.sogong.tejava.dto.RegisterDTO;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.User;
 import com.sogong.tejava.repository.UserRepository;
+import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +40,11 @@ public class UserService {
         user.setPwd(passwordEncoder.encode(registerDTO.getPwd()));
         user.setName(registerDTO.getName());
         user.setAddress(registerDTO.getAddress());
+        user.setPhoneNo(passwordEncoder.encode(registerDTO.getPhoneNo()));
         user.setRole(Role.USER); // 기본값 : USER
         // TODO: 관리자의 의 경우, Admin role 로 해서 workbench 를 통해 저장할 예정
         // TODO: 연락처 인증 관련해서도 나중에 괜찮다면 작성해볼 것!
+        user.setPhoneCheck(registerDTO.getPhoneCheck());
         user.setAgreement(registerDTO.getAgreement());
 
         // DB에 사용자 저장
@@ -68,8 +71,12 @@ public class UserService {
             throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
         }
 
+        if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.ADMIN_PWD)) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+        }
+
         // 비밀번호가 틀린 경우
-        if (!passwordEncoder.matches(password, loginMember.getPwd())) { // 받은 password 로 기입한 password 와 일치하는 지 확인
+        if (loginMember.getRole().equals(Role.USER) && !passwordEncoder.matches(password, loginMember.getPwd())) { // 받은 password 로 기입한 password 와 일치하는 지 확인
             throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
         }
 

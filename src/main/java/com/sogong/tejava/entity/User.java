@@ -1,11 +1,8 @@
 package com.sogong.tejava.entity;
 
 import com.sogong.tejava.converter.RoleConverter;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,6 +22,7 @@ public class User {
     private String pwd;
     private String name;
     private String address;
+    private String phoneNo;
 
     @Convert(converter = RoleConverter.class)
     private Role role;

@@ -71,13 +71,18 @@ public class UserService {
             throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
         }
 
-        if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.ADMIN_PWD)) {
+        // 관리자/일반 유저 로그인 시, 비밀번호가 틀린 경우
+        if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.COMMON_PWD)) {
             throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
-        }
-
-        // 비밀번호가 틀린 경우
-        if (loginMember.getRole().equals(Role.USER) && !passwordEncoder.matches(password, loginMember.getPwd())) { // 받은 password 로 기입한 password 와 일치하는 지 확인
-            throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+        } else if (loginMember.getRole().equals(Role.USER)) {
+            if(loginMember.getUid().equals(Const.TEST_UID)) {
+                if(!loginMember.getPwd().equals(Const.COMMON_PWD)) {
+                    throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+                }
+            } else {
+                if (!passwordEncoder.matches(password, loginMember.getPwd()))
+                    throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+            }
         }
 
         // TODO: 연락처 인증도 구현 시, phoneCheck 필드 값 확인할 것

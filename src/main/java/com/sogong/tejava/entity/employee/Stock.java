@@ -10,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name="stock")
 public class Stock {
 
     @Id
@@ -21,5 +22,5 @@ public class Stock {
     private LocalDateTime timeStamp;
 
     @OneToMany(mappedBy = "stock")
-    private List<StockItem> stockItems = new ArrayList<>();
+    private List<StockItem> stockItem = new ArrayList<>();
 }

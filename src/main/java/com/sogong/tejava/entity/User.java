@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Data
 @ToString(exclude = "pwd")
+@Table(name="user")
 public class User {
 
     @Id
@@ -31,6 +32,6 @@ public class User {
     private Boolean phoneCheck; // default : false -> TINYINT(1)
     private Boolean agreement; // default : true -> TINYINT(1)
 
-    @OneToMany(mappedBy = "User")
-    private List<OrderHistory> orderHistories  = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<OrderHistory> orderHistory  = new ArrayList<>();
 }

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
+@Table(name="order_history")
 public class OrderHistory {
 
     @Id
@@ -20,9 +21,9 @@ public class OrderHistory {
     @Column // 생성된 이후, 수정 가능할 수 있어야 하므로 updatable 옵션은 true 로 둠
     private LocalDateTime timeStamp;
 
-    private String option;
+    private String optionsToString;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Many = OrderHistory, = One 한명의 유저는 여러 개의 주문 내역을 갖고 있다.
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

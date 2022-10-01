@@ -8,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name="menu")
 public class Menu {
 
     @Id
@@ -20,11 +21,11 @@ public class Menu {
     private Integer price;
 
     @OneToMany(mappedBy = "menu")
-    private List<OrderHistoryMenu> orderHistoryMenus = new ArrayList<>();
+    private List<OrderHistoryMenu> orderHistoryMenu = new ArrayList<>();
 
     @OneToMany(mappedBy = "menu")
-    private List<Option> options = new ArrayList<>();
+    private List<Options> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "menu")
-    private List<Style> styles = new ArrayList<>();
+    private List<Style> style = new ArrayList<>();
 }

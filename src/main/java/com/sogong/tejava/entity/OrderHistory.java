@@ -1,8 +1,6 @@
 package com.sogong.tejava.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -12,8 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class OrderHistory {
 
     @Id
@@ -24,8 +20,9 @@ public class OrderHistory {
     @Column // 생성된 이후, 수정 가능할 수 있어야 하므로 updatable 옵션은 true 로 둠
     private LocalDateTime timeStamp;
 
-    private String menuNm;
-    private String style;
     private String option;
-    private String price;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Many = OrderHistory, = One 한명의 유저는 여러 개의 주문 내역을 갖고 있다.
+    @JoinColumn(name = "user_id")
+    private User user;
 }

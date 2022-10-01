@@ -8,14 +8,12 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Accessors(chain = true)
-@ToString
+@ToString(exclude = "pwd")
 public class User {
 
     @Id
@@ -30,10 +28,9 @@ public class User {
     @Convert(converter = RoleConverter.class)
     private Role role;
 
-    private Boolean phoneCheck;
-    private Boolean agreement;
+    private Boolean phoneCheck; // default : false -> TINYINT(1)
+    private Boolean agreement; // default : true -> TINYINT(1)
 
-    @OneToMany(targetEntity = OrderHistory.class) // Many = OrderHistory, = One 한명의 유저는 여러 개의 주문 내역을 갖고 있다.
-    @JoinColumn(name = "uo_fk", referencedColumnName = "id") // foreign key (userId) references User (id)
-    private List<OrderHistory> orderHistories;
+    @OneToMany(mappedBy = "User")
+    private List<OrderHistory> orderHistories  = new ArrayList<>();
 }

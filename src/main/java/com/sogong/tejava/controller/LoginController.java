@@ -19,7 +19,7 @@ public class LoginController {
     }
 
     @GetMapping("/")
-    @ApiOperation(value = "홈화면", notes = "UOSTime 의 첫 화면입니다. 세션을 가져와 회원을 반환합니다. 프론트에선 반환된 데이터가 null 이면 로그인 페이지를, 아니면 로그인된 페이지를 보여줘야 합니다.")
+    @ApiOperation(value = "홈 화면", notes = "첫 화면입니다. 세션을 가져와 회원을 반환합니다. 프론트에선 반환된 데이터가 null 이면 로그인 페이지를, 아니면 주문 내역과 함께 로그인된 페이지를 보여줘야 합니다.")
     public ResponseEntity<User> home(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User loginMember) {
         return ResponseEntity.ok().body(userService.home(loginMember));
     }

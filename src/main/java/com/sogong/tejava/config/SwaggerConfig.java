@@ -19,7 +19,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(this.swaggerInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sogong.tejava.controller")) // request handler selector 가 스캔할 퍂키지 선택
+                .apis(RequestHandlerSelectors.basePackage("com.sogong.tejava.controller"))
                 .paths(PathSelectors.any()) // 모든 url 에 대해 명세서 작성
                 .build()
                 .useDefaultResponseMessages(true);
@@ -28,7 +28,7 @@ public class SwaggerConfig {
     private ApiInfo swaggerInfo() {
         return new ApiInfoBuilder()
                 .title("소프트웨어공학 미스터 대박 레스토랑 API Documentation")
-                .description("SpringBoot와 js로 개발해보는 미스터 대박 웹 프로젝트입니다.")
+                .description("SpringBoot와 React.js로 개발해보는 미스터 대박 웹 프로젝트입니다.")
                 .version("1.0")
                 .build();
     }

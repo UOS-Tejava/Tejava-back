@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@Table(name="style")
+@Table(name = "style")
 public class Style {
 
     @Id
@@ -15,10 +15,10 @@ public class Style {
 
     private String styleNm;
     private String styleConfig;
-    private String imagePath;
-    private Integer price;
+    private String stylePic;
+    private int price;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;
 }

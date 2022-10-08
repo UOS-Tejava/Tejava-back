@@ -2,7 +2,6 @@ package com.sogong.tejava.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,7 +22,7 @@ public class GlobalExceptionHandler {
     MethodNotAllowedException : 잘못된 url 로 api 요청하는 경우
 
     <에러코드 500>
-    IllegalStateException : 폼에서 기존의 회원 정보와 중복 발생 / 비밀번호와 확인용 비밀번호 불일치 / 회원탈퇴 시 비밀번호 틀렸을 때
+    IllegalStateException : 폼에서 기존의 회원 정보와 중복 발생 / 비밀번호와 확인용 비밀번호 불일치 / 회원탈퇴 시 비밀번호 틀렸을 때 / 접수 대기 중 상태아닌데 주문 수정을 할 때
      */
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

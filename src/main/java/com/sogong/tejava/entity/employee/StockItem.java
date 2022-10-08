@@ -1,6 +1,6 @@
 package com.sogong.tejava.entity.employee;
 
-import com.sogong.tejava.entity.Menu;
+import com.sogong.tejava.entity.BaseTimeEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,15 +8,15 @@ import javax.persistence.*;
 @Entity
 @Data
 @Table(name="stock_item")
-public class StockItem {
+public class StockItem  extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String itemNm;
-    private String imagePath;
-    private Integer quantity;
+    private String stockItemNm;
+    private String stockItemPic;
+    private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id")

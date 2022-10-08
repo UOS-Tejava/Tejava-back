@@ -14,9 +14,9 @@ public class Options {
     private Long id;
 
     private String optionNm;
-    private String imagePath;
-    private Integer price;
-    private Integer quantity;
+    private String optionPic;
+    private int price;
+    private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")

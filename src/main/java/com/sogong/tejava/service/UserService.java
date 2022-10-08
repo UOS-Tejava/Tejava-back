@@ -2,7 +2,7 @@ package com.sogong.tejava.service;
 
 import com.sogong.tejava.dto.RegisterDTO;
 import com.sogong.tejava.entity.Role;
-import com.sogong.tejava.entity.User;
+import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.repository.UserRepository;
 import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.SessionConst;
@@ -48,7 +48,7 @@ public class UserService {
         user.setAgreement(registerDTO.getAgreement());
 
         // DB에 사용자 저장
-        userRepository.save(user);
+        saveUser(user);
     }
 
     public boolean checkUidDuplicate(String uid) {
@@ -60,7 +60,7 @@ public class UserService {
         return loginMember;
     }
 
-    public User login(String uid, String password, Boolean staySignedIn, Boolean loginAsAdmin) { // TODO: 프론트 단에서 하는 게 맞는 지 -> bool 값은 사용할 게 없음
+    public User login(String uid, String password, Boolean staySignedIn) { // TODO: 프론트 단에서 하는 게 맞는 지 -> bool 값은 사용할 게 없음
         //TODO: 로그인 시, 관리자의 계정인 경우, 직원 인터페이스 화면으로 이동할 수 있게끔 할 것
 
         User loginMember = userRepository.findUserByUid(uid);
@@ -75,8 +75,8 @@ public class UserService {
         if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.COMMON_PWD)) {
             throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
         } else if (loginMember.getRole().equals(Role.USER)) {
-            if(loginMember.getUid().equals(Const.TEST_UID)) {
-                if(!loginMember.getPwd().equals(Const.COMMON_PWD)) {
+            if (loginMember.getUid().equals(Const.TEST_UID)) {
+                if (!loginMember.getPwd().equals(Const.COMMON_PWD)) {
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
                 }
             } else {
@@ -96,5 +96,9 @@ public class UserService {
         log.info("해당 세션 : " + session);
 
         return loginMember;
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 }

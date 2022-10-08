@@ -1,7 +1,7 @@
 package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.LoginDTO;
-import com.sogong.tejava.entity.User;
+import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.service.UserService;
 import com.sogong.tejava.util.SessionConst;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +27,7 @@ public class LoginController {
     @GetMapping("/login")
     @ApiOperation(value = "로그인", notes = "아이디와 비밀번호로 로그인합니다.")
     public ResponseEntity<User> login(@Validated @RequestBody LoginDTO loginDTO) {
-        return ResponseEntity.ok().body(userService.login(loginDTO.getUid(), loginDTO.getPwd(), loginDTO.getStaySignedIn(), loginDTO.getLoginAsAdmin()));
+        return ResponseEntity.ok().body(userService.login(loginDTO.getUid(), loginDTO.getPwd(), loginDTO.getStaySignedIn()));
     }
 
 //    @Async

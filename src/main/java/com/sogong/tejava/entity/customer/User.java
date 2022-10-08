@@ -1,18 +1,20 @@
-package com.sogong.tejava.entity;
+package com.sogong.tejava.entity.customer;
 
 import com.sogong.tejava.converter.RoleConverter;
+import com.sogong.tejava.entity.BaseTimeEntity;
+import com.sogong.tejava.entity.Role;
+import com.sogong.tejava.entity.customer.OrderHistory;
+import com.sogong.tejava.entity.customer.ShoppingCart;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
 @ToString(exclude = "pwd")
-@Table(name="user")
-public class User {
+@Table(name = "user")
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +32,11 @@ public class User {
     private Boolean phoneCheck; // default : false -> TINYINT(1)
     private Boolean agreement; // default : true -> TINYINT(1)
 
-    @OneToMany(mappedBy = "user")
-    private List<OrderHistory> orderHistory  = new ArrayList<>();
+    private Integer orderCnt = 0; // 주문 횟수
+
+    @OneToOne(mappedBy = "user")
+    private OrderHistory orderHistory;
+
+    @OneToOne(mappedBy = "user")
+    private ShoppingCart shoppingCart;
 }

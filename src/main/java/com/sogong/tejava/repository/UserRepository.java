@@ -1,6 +1,6 @@
 package com.sogong.tejava.repository;
 
-import com.sogong.tejava.entity.User;
+import com.sogong.tejava.entity.customer.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

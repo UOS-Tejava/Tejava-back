@@ -15,12 +15,12 @@ public class Order extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double totalPrice;
-    private OrderStatus orderStatus;
-    private String optionToString;
+    private double total_price;
+    private OrderStatus order_status;
+    private String option_to_string;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "orderHistory_id")
+    @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
 
     @OneToMany(fetch = FetchType.EAGER)

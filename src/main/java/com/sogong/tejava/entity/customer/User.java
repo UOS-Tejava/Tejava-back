@@ -3,8 +3,6 @@ package com.sogong.tejava.entity.customer;
 import com.sogong.tejava.converter.RoleConverter;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Role;
-import com.sogong.tejava.entity.customer.OrderHistory;
-import com.sogong.tejava.entity.customer.ShoppingCart;
 import lombok.Data;
 import lombok.ToString;
 
@@ -12,7 +10,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@ToString(exclude = "pwd")
+@ToString(exclude = {"id", "pwd"})
 @Table(name = "user")
 public class User extends BaseTimeEntity {
 
@@ -29,10 +27,10 @@ public class User extends BaseTimeEntity {
     @Convert(converter = RoleConverter.class)
     private Role role;
 
-    private Boolean phoneCheck; // default : false -> TINYINT(1)
+    private Boolean phone_check; // default : false -> TINYINT(1)
     private Boolean agreement; // default : true -> TINYINT(1)
 
-    private Integer orderCnt = 0; // 주문 횟수
+    private int order_cnt; // 주문 횟수
 
     @OneToOne(mappedBy = "user")
     private OrderHistory orderHistory;

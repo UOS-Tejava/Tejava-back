@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "orderHistory")
+@Table(name = "order_history")
 public class OrderHistory extends BaseTimeEntity {
 
     @Id

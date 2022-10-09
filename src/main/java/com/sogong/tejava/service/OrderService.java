@@ -51,12 +51,12 @@ public class OrderService {
             totalPrice += (menu.getPrice() + menu.getStyle().getPrice());
         }
 
-        if(customer.getOrderCnt() >= 5) {
+        if(customer.getOrder_cnt() >= 5) {
             totalPrice = totalPrice * 0.9;
         }
 
         // 주문 테이블에 order 객체 저장
-        order.setTotalPrice(totalPrice);
+        order.setTotal_price(totalPrice);
         order.setMenu(menuList);
         orderRepository.save(order);
 
@@ -65,7 +65,7 @@ public class OrderService {
         orderHistoryRepository.save(orderHistory);
 
         // 주문 횟수 1 증가하며 장바구니 초기화
-        customer.setOrderCnt(customer.getOrderCnt() + 1);
+        customer.setOrder_cnt(customer.getOrder_cnt() + 1);
         customer.setShoppingCart(null);
         userRepository.save(customer);
 
@@ -93,7 +93,7 @@ public class OrderService {
             }
         }
 
-        if (!order.getOrderStatus().equals(OrderStatus.pending)) {
+        if (!order.getOrder_status().equals(OrderStatus.pending)) {
             throw new IllegalStateException("주문이 이미 접수되어 수정 불가합니다.");
         }
 
@@ -111,7 +111,7 @@ public class OrderService {
         // 수정사항 저장
         order.getMenu().add(0, menu);
         orderHistory.getOrder().add(0, order);
-        order.setOrderStatus(OrderStatus.pending);
+        order.setOrder_status(OrderStatus.pending);
 
         // 고객의 주문 내역과 전체 주문 테이블에 객체 저장
         orderRepository.save(order);
@@ -130,7 +130,7 @@ public class OrderService {
             }
         }
 
-        if (!order.getOrderStatus().equals(OrderStatus.pending)) {
+        if (!order.getOrder_status().equals(OrderStatus.pending)) {
             throw new IllegalStateException("주문이 이미 접수되어 수정 불가합니다.");
         }
 
@@ -167,7 +167,7 @@ public class OrderService {
             }
         }
 
-        if (!order.getOrderStatus().equals(OrderStatus.pending)) {
+        if (!order.getOrder_status().equals(OrderStatus.pending)) {
             throw new IllegalStateException("주문이 이미 접수되어 취소 불가합니다.");
         }
 
@@ -177,7 +177,7 @@ public class OrderService {
         orderRepository.delete(order);
 
         // 주문 횟수 1 감소
-        customer.setOrderCnt(customer.getOrderCnt() - 1);
+        customer.setOrder_cnt(customer.getOrder_cnt() - 1);
         userRepository.save(customer);
     }
 

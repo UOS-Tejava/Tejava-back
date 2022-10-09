@@ -14,8 +14,8 @@ public class StockItem  extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String stockItemNm;
-    private String stockItemPic;
+    private String stock_item_nm;
+    private String stock_item_pic;
     private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)

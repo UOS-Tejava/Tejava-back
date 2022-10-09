@@ -18,14 +18,14 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String menuNm;
-    private String menuConfig;
-    private String menuPic;
+    private String menu_nm;
+    private String menu_config;
+    private String menu_pic;
     private int price;
     private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shoppingCart_id")
+    @JoinColumn(name = "shopping_cart_id")
     private ShoppingCart shoppingCart;
 
     @ManyToOne(fetch = FetchType.LAZY)

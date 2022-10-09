@@ -12,14 +12,14 @@ import java.util.List;
 @Entity
 @Data
 @ToString
-@Table(name = "shoppingCart")
+@Table(name = "shopping_cart")
 public class ShoppingCart extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double totalPrice;
+    private double total_price;
 
     @OneToMany(mappedBy = "shoppingCart")
     private List<Menu> menu = new ArrayList<>();

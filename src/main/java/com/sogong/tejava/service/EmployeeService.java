@@ -41,7 +41,7 @@ public class EmployeeService {
             throw new IllegalStateException("선택하신 주문이 존재하지 않습니다.");
         }
 
-        order.setOrderStatus(changeOrderStatusDTO.getOrderStatus());
+        order.setOrder_status(changeOrderStatusDTO.getOrderStatus());
         orderRepository.save(order);
     }
 

@@ -13,9 +13,9 @@ public class Style {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String styleNm;
-    private String styleConfig;
-    private String stylePic;
+    private String style_nm;
+    private String style_config;
+    private String style_pic;
     private int price;
 
     @OneToOne

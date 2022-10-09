@@ -13,8 +13,8 @@ public class Options {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String optionNm;
-    private String optionPic;
+    private String option_nm;
+    private String option_pic;
     private int price;
     private int quantity;
 

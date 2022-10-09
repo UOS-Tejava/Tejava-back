@@ -44,11 +44,11 @@ public class UserService {
         user.setRole(Role.USER); // 기본값 : USER
         // TODO: 관리자의 의 경우, Admin role 로 해서 workbench 를 통해 저장할 예정
         // TODO: 연락처 인증 관련해서도 나중에 괜찮다면 작성해볼 것!
-        user.setPhoneCheck(registerDTO.getPhoneCheck());
+        user.setPhone_check(registerDTO.getPhoneCheck());
         user.setAgreement(registerDTO.getAgreement());
 
         // DB에 사용자 저장
-        saveUser(user);
+        userRepository.save(user);
     }
 
     public boolean checkUidDuplicate(String uid) {
@@ -96,9 +96,5 @@ public class UserService {
         log.info("해당 세션 : " + session);
 
         return loginMember;
-    }
-
-    public void saveUser(User user) {
-        userRepository.save(user);
     }
 }

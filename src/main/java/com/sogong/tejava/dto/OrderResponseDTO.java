@@ -12,7 +12,6 @@ public class OrderResponseDTO {
 
     private String customerName;
     private String customerAddress;
-    private String orderDate;
-    private String orderTime;
+    private String orderDateAndTime;
     private double totalPrice;
 }

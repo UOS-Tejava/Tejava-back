@@ -5,6 +5,5 @@ import lombok.Data;
 @Data
 public class OrderDateTime {
 
-    private String Date;
-    private String time;
+    private String dateTime;
 }

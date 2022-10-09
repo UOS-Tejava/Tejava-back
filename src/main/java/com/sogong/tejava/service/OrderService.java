@@ -10,6 +10,7 @@ import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.repository.*;
 import com.sogong.tejava.util.OrderDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ public class OrderService {
     // 주문하기
     public OrderResponseDTO placeOrder(User customer, ShoppingCartDTO shoppingCartDTO, OrderDateTime orderDateTime) {
 
+        validateUser(customer);
+
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
         List<Menu> menuList = shoppingCartDTO.getShoppingCart().getMenu();
         Order order = new Order();
@@ -51,7 +54,7 @@ public class OrderService {
             totalPrice += (menu.getPrice() + menu.getStyle().getPrice());
         }
 
-        if(customer.getOrder_cnt() >= 5) {
+        if (customer.getOrder_cnt() >= 5) {
             totalPrice = totalPrice * 0.9;
         }
 
@@ -72,8 +75,7 @@ public class OrderService {
         // 반환할 객체의 정보 setting
         orderResponseDTO.setCustomerName(customer.getName());
         orderResponseDTO.setCustomerAddress(customer.getAddress());
-        orderResponseDTO.setOrderDate(orderDateTime.getDate());
-        orderResponseDTO.setOrderTime(orderDateTime.getTime());
+        orderResponseDTO.setOrderDateAndTime(orderDateTime.getDateTime());
         orderResponseDTO.setTotalPrice(totalPrice);
 
         return orderResponseDTO;
@@ -82,6 +84,8 @@ public class OrderService {
     // 주문한 내역에서 메뉴의 옵션 수정
     public void updateMenuOptions(User customer, ChangeOptionsDTO changeOptionsDTO) {
 
+        validateUser(customer);
+
         OrderHistory orderHistory = customer.getOrderHistory();
 
         List<Order> orderList = customer.getOrderHistory().getOrder();
@@ -89,7 +93,6 @@ public class OrderService {
         for (Order order1 : orderList) {
             if (order1.getId().equals(changeOptionsDTO.getOrderId())) {
                 order = order1;
-
             }
         }
 
@@ -119,6 +122,8 @@ public class OrderService {
     }
 
     public void updateMenuStyle(User customer, ChangeStyleDTO changeStyleDTO) {
+
+        validateUser(customer);
 
         OrderHistory orderHistory = customer.getOrderHistory();
 
@@ -157,6 +162,8 @@ public class OrderService {
     // 주문한 내역에서 주문 취소
     public void cancelOrder(User customer, Long orderId) {
 
+        validateUser(customer);
+
         OrderHistory orderHistory = customer.getOrderHistory();
 
         List<Order> orderList = customer.getOrderHistory().getOrder();
@@ -184,7 +191,7 @@ public class OrderService {
     // 고객의 주문 내역 보여주기
     public List<Order> showOrderHistory(User customer) {
 
-        if(customer == null) {
+        if (customer == null) {
             throw new IllegalStateException("로그인 이후에 사용해주세요.");
         }
 
@@ -195,9 +202,11 @@ public class OrderService {
     // 고객의 주문 내역 모두 삭제하기
     public void deleteOrderHistory(User customer) {
 
-        if(customer == null) {
+        if (customer == null) {
             throw new IllegalStateException("로그인 이후에 사용해주세요.");
         }
+
+        validateUser(customer);
 
         OrderHistory orderHistory = customer.getOrderHistory();
         orderHistory.getOrder().clear();
@@ -235,5 +244,11 @@ public class OrderService {
         }
 
         return styleList;
+    }
+
+    public void validateUser(User user) {
+        if (user.getRole().equals(Role.ADMINISTRATOR)) {
+            throw new AccessDeniedException("일반 회원이 사용하실 수 있는 기능입니다.");
+        }
     }
 }

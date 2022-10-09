@@ -14,5 +14,5 @@ public class OrderResponseDTO {
     private String customerAddress;
     private String orderDate;
     private String orderTime;
-    private int totalPrice;
+    private double totalPrice;
 }

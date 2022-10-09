@@ -15,7 +15,7 @@ public class Order extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int totalPrice;
+    private double totalPrice;
     private OrderStatus orderStatus;
     private String optionToString;
 

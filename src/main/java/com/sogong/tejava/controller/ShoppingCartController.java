@@ -23,6 +23,7 @@ public class ShoppingCartController {
 
     // 카트에 담긴 메뉴 아이템 조회하기
     @GetMapping("/cart")
+    @ApiOperation(value = "장바구니 조회하기", notes = "장바구니 목록의 메뉴가 리스트 형태로 반환됩니다.")
     public ResponseEntity<List<Menu>> showCartItems(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User customer) {
 
         List<Menu> menuList = cartService.showCartItems(customer);
@@ -39,7 +40,7 @@ public class ShoppingCartController {
     }
 
     // 카트에 담긴 메뉴 아이템의 옵션 수정하기
-    @PatchMapping("/cart/update")
+    @PatchMapping("/cart/update/options")
     @ApiOperation(value = "장바구니의 메뉴 옵션 수정하기", notes = "장바구니 목록에서 아이템을 선택하여 옵션을 수정합니다.")
     public ResponseEntity<?> updateMenuOptions(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User customer, @RequestBody ChangeOptionsDTO changeOptionsDTO) {
 
@@ -48,7 +49,7 @@ public class ShoppingCartController {
     }
 
     // 카트에 담긴 메뉴 아이템의 스타일 수정하기
-    @PatchMapping("/cart/update")
+    @PatchMapping("/cart/update/style")
     @ApiOperation(value = "장바구니의 메뉴 스타일 수정하기", notes = "장바구니 목록에서 아이템을 선택하여 스타일을 수정합니다.")
     public ResponseEntity<?> updateMenuOptions(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User customer, @RequestBody ChangeStyleDTO changeStyleDTO) {
 
@@ -58,7 +59,7 @@ public class ShoppingCartController {
 
     // 카트의 메뉴 아이템 한 개 삭제하기
     @DeleteMapping("/cart/delete-one/{menuId}")
-    @ApiOperation(value = "장바구니에서 메뉴 한 개 삭제하기", notes = "장바구니 목록에서 하나의 아이템이 삭제됩니다.")
+    @ApiOperation(value = "장바구니에서 메뉴 한 개 삭제하기", notes = "장바구니 목록에서 하나의 아이템 옆의 휴지통을 클릭하여 실행합니다.")
     public ResponseEntity<?> deleteOne(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User customer, @PathVariable Long menuId) {
 
         cartService.deleteOne(customer, menuId);

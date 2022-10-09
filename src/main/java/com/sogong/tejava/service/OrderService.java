@@ -33,7 +33,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final OptionsRepository optionsRepository;
     private final StyleRepository styleRepository;
-    int totalPrice = 0;
+    double totalPrice = 0.0;
 
     // 주문하기
     public OrderResponseDTO placeOrder(User customer, ShoppingCartDTO shoppingCartDTO, OrderDateTime orderDateTime) {
@@ -49,6 +49,10 @@ public class OrderService {
                 totalPrice += option.getPrice();
             }
             totalPrice += (menu.getPrice() + menu.getStyle().getPrice());
+        }
+
+        if(customer.getOrderCnt() >= 5) {
+            totalPrice = totalPrice * 0.9;
         }
 
         // 주문 테이블에 order 객체 저장
@@ -107,6 +111,7 @@ public class OrderService {
         // 수정사항 저장
         order.getMenu().add(0, menu);
         orderHistory.getOrder().add(0, order);
+        order.setOrderStatus(OrderStatus.pending);
 
         // 고객의 주문 내역과 전체 주문 테이블에 객체 저장
         orderRepository.save(order);
@@ -163,7 +168,7 @@ public class OrderService {
         }
 
         if (!order.getOrderStatus().equals(OrderStatus.pending)) {
-            throw new IllegalStateException("주문이 이미 접수되어 수정 불가합니다.");
+            throw new IllegalStateException("주문이 이미 접수되어 취소 불가합니다.");
         }
 
         // // 고객의 주문 내역과 전체 주문 테이블에서 삭제
@@ -179,12 +184,20 @@ public class OrderService {
     // 고객의 주문 내역 보여주기
     public List<Order> showOrderHistory(User customer) {
 
+        if(customer == null) {
+            throw new IllegalStateException("로그인 이후에 사용해주세요.");
+        }
+
         OrderHistory orderHistory = customer.getOrderHistory();
         return orderHistory.getOrder();
     }
 
     // 고객의 주문 내역 모두 삭제하기
     public void deleteOrderHistory(User customer) {
+
+        if(customer == null) {
+            throw new IllegalStateException("로그인 이후에 사용해주세요.");
+        }
 
         OrderHistory orderHistory = customer.getOrderHistory();
         orderHistory.getOrder().clear();

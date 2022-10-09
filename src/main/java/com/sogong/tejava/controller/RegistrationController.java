@@ -19,7 +19,7 @@ public class RegistrationController {
         this.userService = userService;
     }
 
-    // 중복 에러가 없거나 비밀번호와 재확인용 비밀번호가 일치하면 등록 진행, 유효성 검사는 이미 적용되어 있음
+    // 중복 에러(아이디)가 없거나 비밀번호와 재확인용 비밀번호가 일치하면 등록 진행, 유효성 검사는 이미 적용되어 있음
     @PostMapping("user/register")
     @ApiOperation(value = "회원 가입", notes = "회원가입을 진행합니다. \n \n" +
             "모든 필드 값은 null 이 될 수 없습니다. \n" +

@@ -19,7 +19,7 @@ public class ShoppingCart extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int totalPrice;
+    private double totalPrice;
 
     @OneToMany(mappedBy = "shoppingCart")
     private List<Menu> menu = new ArrayList<>();

@@ -1,5 +1,5 @@
 package com.sogong.tejava.entity;
 
 public enum OrderStatus {
-    pending, cooking, delivering
+    pending, cooking, delivering, completed
 }

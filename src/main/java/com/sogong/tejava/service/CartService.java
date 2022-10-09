@@ -55,9 +55,10 @@ public class CartService {
         }
         menu.setOptions(changeOptionsDTO.getNewOptions());
 
+        // 장바구니에 수정된 메뉴 추가
         shoppingCart.getMenu().add(0, menu);
 
-        // 장바구니에 수정된 메뉴 추가
+        // db에 갱신
         shoppingCartRepository.save(shoppingCart);
     }
 

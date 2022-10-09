@@ -98,7 +98,7 @@ public class UserService {
         return loginMember;
     }
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 }

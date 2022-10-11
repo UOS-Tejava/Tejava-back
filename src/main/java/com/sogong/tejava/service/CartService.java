@@ -19,11 +19,27 @@ public class CartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
     /*
-    1. 카트에 담긴 메뉴 보여주기
-    2. 카트에 메뉴 담기
-    3. 카트에 담겨 있는 아이템의 옵션/스타일 수정
-    4. 카트에 담긴 거 아이템 한 개 삭제
+    1. 카트 만들기
+    2. 카트에 담긴 메뉴 보여주기
+    3. 카트에 메뉴 담기
+    4. 카트에 담겨 있는 아이템의 옵션/스타일 수정
+    5. 카트에 담긴 거 아이템 한 개 삭제
      */
+
+    // 카트 만들기
+    public void createCart(User customer) {
+        validateUser(customer);
+
+        if(customer.getShoppingCart() != null) {
+
+            shoppingCartRepository.save(
+                    ShoppingCart.builder()
+                            .menu(null)
+                            .user(customer)
+                            .total_price(0.0)
+                            .build());
+        }
+    }
 
     // 카트에 담긴 메뉴 보여주기
     public List<Menu> showCartItems(User customer) {

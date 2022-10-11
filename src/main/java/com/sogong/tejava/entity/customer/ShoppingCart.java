@@ -2,6 +2,7 @@ package com.sogong.tejava.entity.customer;
 
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Menu;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @ToString
+@Builder
 @Table(name = "shopping_cart")
 public class ShoppingCart extends BaseTimeEntity {
 
@@ -26,4 +28,6 @@ public class ShoppingCart extends BaseTimeEntity {
 
     @OneToOne
     private User user;
+
+    public ShoppingCart() {}
 }

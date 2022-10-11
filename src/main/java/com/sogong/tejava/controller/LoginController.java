@@ -2,6 +2,7 @@ package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.LoginDTO;
 import com.sogong.tejava.entity.customer.User;
+import com.sogong.tejava.service.CartService;
 import com.sogong.tejava.service.UserService;
 import com.sogong.tejava.util.SessionConst;
 import io.swagger.annotations.ApiOperation;
@@ -13,14 +14,17 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     private final UserService userService;
+    private final CartService cartService;
 
-    public LoginController(UserService userService) {
+    public LoginController(UserService userService, CartService cartService) {
         this.userService = userService;
+        this.cartService = cartService;
     }
 
     @GetMapping("/")
     @ApiOperation(value = "홈 화면", notes = "첫 화면입니다. 세션을 가져와 회원을 반환합니다.")
     public ResponseEntity<User> home(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User loginMember) {
+        cartService.createCart(loginMember);
         return ResponseEntity.ok().body(userService.home(loginMember));
     }
 

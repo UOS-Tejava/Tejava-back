@@ -189,14 +189,19 @@ public class OrderService {
     }
 
     // 고객의 주문 내역 보여주기
-    public List<Order> showOrderHistory(User customer) {
+    public List<Menu> showOrderHistory(User customer) {
 
         if (customer == null) {
             throw new IllegalStateException("로그인 이후에 사용해주세요.");
         }
 
         OrderHistory orderHistory = customer.getOrderHistory();
-        return orderHistory.getOrder();
+
+        List<Menu> result = new ArrayList<>();
+        for (Order order : orderHistory.getOrder()) {
+            result.addAll(order.getMenu());
+        }
+        return result;
     }
 
     // 고객의 주문 내역 모두 삭제하기

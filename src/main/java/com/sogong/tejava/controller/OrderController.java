@@ -64,7 +64,7 @@ public class OrderController {
     // 회원의 주문 내역 반환하기
     @GetMapping("/order/history")
     @ApiOperation(value = "주문 내역 보여주기", notes = "회원의 주문 내역을 반환합니다.")
-    public ResponseEntity<List<Order>> showOrderHistory(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User customer) {
+    public ResponseEntity<List<Menu>> showOrderHistory(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User customer) {
 
         return ResponseEntity.ok().body(orderService.showOrderHistory(customer));
     }

@@ -21,15 +21,10 @@ import java.awt.print.Pageable;
 @RequiredArgsConstructor
 public class SwaggerConfig {
 
-    private final TypeResolver typeResolver;
-
     @Bean
     public Docket swaggerAPI() {
 
         return new Docket(DocumentationType.SWAGGER_2)
-                .alternateTypeRules(AlternateTypeRules
-                        .newRule(typeResolver.resolve(Pageable.class), typeResolver.resolve(Page.class))
-                )
                 .apiInfo(this.swaggerInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.sogong.tejava.controller"))

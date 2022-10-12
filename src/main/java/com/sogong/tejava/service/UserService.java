@@ -54,8 +54,22 @@ public class UserService {
         user.setPhone_check(registerDTO.getPhoneCheck());
         user.setAgreement(registerDTO.getAgreement());
 
-        // DB에 사용자 저장
+        // 회원을 위한 장바구니 생성
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUser(user);
+        shoppingCart.setTotal_price(0.0);
+        shoppingCart.setMenu(null);
+
+        // 회원을 위한 주문 내역 테이블 생성
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setOrder(null);
+        orderHistory.setUser(user);
+        user.setOrderHistory(orderHistory);
+
+        // DB에 저장
         userRepository.save(user);
+        orderHistoryRepository.save(orderHistory);
+        shoppingCartRepository.save(shoppingCart);
     }
 
     public boolean checkUidDuplicate(String uid) {
@@ -67,7 +81,7 @@ public class UserService {
 
         HttpSession currentSession = request.getSession(false);
 
-        if(currentSession == null) {
+        if (currentSession == null) {
             // 신규 세션 생성
             HttpSession notMemberSession = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession();
 
@@ -109,11 +123,11 @@ public class UserService {
         }
 
         // 관리자/일반 유저 로그인 시, 비밀번호가 틀린 경우
-        if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.COMMON_PWD)) {
+        if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.TEST_PWD)) {
             throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
         } else if (loginMember.getRole().equals(Role.USER)) {
-            if (loginMember.getUid().equals(Const.TEST_UID)) {
-                if (!loginMember.getPwd().equals(Const.COMMON_PWD)) {
+            if (loginMember.getUid().equals(Const.TEST_USER_UID)) {
+                if (!loginMember.getPwd().equals(Const.TEST_PWD)) {
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
                 }
             } else {
@@ -126,34 +140,12 @@ public class UserService {
 
         // 홈화면 들어갈 시 생성되었던 세션 삭제
         HttpSession notMemberSession = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession(false);
-        if(notMemberSession != null) {
+        if (notMemberSession != null) {
             notMemberSession.invalidate();
         }
 
         // 신규 세션 생성
         HttpSession session = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession();
-
-        if(!shoppingCartRepository.existsById(loginMember.getShoppingCart().getId())) {
-            // 회원을 위한 장바구니 생성
-            ShoppingCart shoppingCart = new ShoppingCart();
-            shoppingCart.setUser(loginMember);
-            shoppingCart.setTotal_price(0.0);
-            shoppingCart.setMenu(null);
-
-            userRepository.save(loginMember);
-            shoppingCartRepository.save(shoppingCart);
-        }
-
-        if(!orderHistoryRepository.existsById(loginMember.getOrderHistory().getId())) {
-            // 회원을 위한 주문 내역 테이블 생성
-            OrderHistory orderHistory = new OrderHistory();
-            orderHistory.setOrder(null);
-            orderHistory.setUser(loginMember);
-            loginMember.setOrderHistory(orderHistory);
-
-            orderHistoryRepository.save(orderHistory);
-            userRepository.save(loginMember);
-        }
 
         // 세션에 회원 정보 보관
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);

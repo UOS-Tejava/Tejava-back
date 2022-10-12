@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "order")
+@Table(name = "order_table")
 public class Order extends BaseTimeEntity {
 
     @Id
@@ -32,7 +32,7 @@ public class Order extends BaseTimeEntity {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JoinColumn(name = "order_table_id", referencedColumnName = "id")
     private List<Menu> menu;
 
 }

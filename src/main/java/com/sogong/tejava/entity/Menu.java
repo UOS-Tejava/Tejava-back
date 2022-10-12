@@ -33,7 +33,7 @@ public class Menu {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_table_id")
     private Order order;
 
     @JsonIgnore

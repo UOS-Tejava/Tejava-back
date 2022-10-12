@@ -10,14 +10,13 @@ import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.repository.OrderRepository;
 import com.sogong.tejava.repository.StockRepository;
 import com.sogong.tejava.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class EmployeeService {
     /*
     1. 들어온 주문 조회
@@ -29,6 +28,13 @@ public class EmployeeService {
     private final StockRepository stockRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    public EmployeeService(StockRepository stockRepository, OrderRepository orderRepository, UserRepository userRepository) {
+        this.stockRepository = stockRepository;
+        this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+    }
 
     // 모든 주문 조회
     public List<Order> getOrderList(UserIdDTO userIdDTO) {

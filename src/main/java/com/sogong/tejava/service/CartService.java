@@ -30,14 +30,14 @@ public class CartService {
     public void createCart(User customer) {
         validateUser(customer);
 
-        if(customer.getShoppingCart() != null) {
+        if (customer.getShoppingCart() != null) {
 
-            shoppingCartRepository.save(
-                    ShoppingCart.builder()
-                            .menu(null)
-                            .user(customer)
-                            .total_price(0.0)
-                            .build());
+            ShoppingCart cart = new ShoppingCart();
+            cart.setMenu(null);
+            cart.setTotal_price(0.0);
+            cart.setUser(customer);
+
+            shoppingCartRepository.save(cart);
         }
     }
 

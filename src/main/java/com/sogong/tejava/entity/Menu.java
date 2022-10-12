@@ -1,5 +1,6 @@
 package com.sogong.tejava.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.customer.ShoppingCart;
 import lombok.Data;
 import lombok.ToString;
@@ -24,17 +25,21 @@ public class Menu {
     private int price;
     private int quantity;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopping_cart_id")
     private ShoppingCart shoppingCart;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "menu")
     private List<Options> options = new ArrayList<>();
 
+    @JsonIgnore
     @OneToOne(mappedBy = "menu")
     private Style style;
 }

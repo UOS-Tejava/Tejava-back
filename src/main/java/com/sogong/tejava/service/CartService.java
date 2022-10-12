@@ -1,12 +1,12 @@
 package com.sogong.tejava.service;
 
-import com.sogong.tejava.dto.ChangeOptionsDTO;
-import com.sogong.tejava.dto.ChangeStyleDTO;
+import com.sogong.tejava.dto.*;
 import com.sogong.tejava.entity.Menu;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.ShoppingCart;
 import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.repository.ShoppingCartRepository;
+import com.sogong.tejava.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -18,53 +18,42 @@ import java.util.List;
 public class CartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
+    private final UserRepository userRepository;
     /*
-    1. 카트 만들기
-    2. 카트에 담긴 메뉴 보여주기
-    3. 카트에 메뉴 담기
-    4. 카트에 담겨 있는 아이템의 옵션/스타일 수정
-    5. 카트에 담긴 거 아이템 한 개 삭제
+    1. 카트에 담긴 메뉴 보여주기
+    2. 카트에 메뉴 담기
+    3. 카트에 담겨 있는 아이템의 옵션/스타일 수정
+    4. 카트에 담긴 거 아이템 한 개 삭제
+    (5. 유저 권한인 지 체크하기)
      */
 
-    // 카트 만들기
-    public void createCart(User customer) {
-        validateUser(customer);
-
-        if (customer.getShoppingCart() != null) {
-
-            ShoppingCart cart = new ShoppingCart();
-            cart.setMenu(null);
-            cart.setTotal_price(0.0);
-            cart.setUser(customer);
-
-            shoppingCartRepository.save(cart);
-        }
-    }
-
     // 카트에 담긴 메뉴 보여주기
-    public List<Menu> showCartItems(User customer) {
+    public List<Menu> showCartItems(UserIdDTO userIdDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(userIdDTO.getUserId());
+        userRoleCheck(userIdDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
         return shoppingCart.getMenu();
     }
 
     // 카트에 메뉴 담기 : 이때 메뉴의 옵션이나 스타일은 정해져 있는 상태
-    public void addToCart(User customer, Menu menu) {
+    public void addToCart(AddToCartDTO addToCartDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(addToCartDTO.getUserId());
+        userRoleCheck(addToCartDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
-        shoppingCart.getMenu().add(0, menu);
+        shoppingCart.getMenu().add(0, addToCartDTO.getMenu());
         shoppingCartRepository.save(shoppingCart);
     }
 
     // 카트의 메뉴 옵션 수정하기
-    public void updateMenuOptions(User customer, ChangeOptionsDTO changeOptionsDTO) {
+    public void updateMenuOptions(ChangeOptionsDTO changeOptionsDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(changeOptionsDTO.getUserId());
+        userRoleCheck(changeOptionsDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
@@ -87,9 +76,10 @@ public class CartService {
     }
 
     // 카트의 메뉴 스타일 수정하기
-    public void updateMenuStyle(User customer, ChangeStyleDTO changeStyleDTO) {
+    public void updateMenuStyle(ChangeStyleDTO changeStyleDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(changeStyleDTO.getUserId());
+        userRoleCheck(changeStyleDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
@@ -111,9 +101,10 @@ public class CartService {
     }
 
     // 카트의 메뉴 아이템 하나 삭제하기
-    public void deleteOne(User customer, Long menuId) {
+    public void deleteOne(CancelMenuFromCartDTO cancelMenuFromCartDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(cancelMenuFromCartDTO.getUserId());
+        userRoleCheck(cancelMenuFromCartDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
@@ -121,7 +112,7 @@ public class CartService {
         List<Menu> menuList = shoppingCart.getMenu();
         Menu menu = new Menu();
         for (Menu menu1 : menuList) {
-            if (menu1.getId().equals(menuId)) {
+            if (menu1.getId().equals(cancelMenuFromCartDTO.getMenuId())) {
                 menu = menu1;
             }
         }
@@ -132,7 +123,12 @@ public class CartService {
         shoppingCartRepository.save(shoppingCart);
     }
 
-    public void validateUser(User user) {
+
+    // 관리자 권한이 있는 지 확인하기
+    public void userRoleCheck(Long userId) {
+
+        User user = userRepository.findUserById(userId);
+
         if (user.getRole().equals(Role.ADMINISTRATOR)) {
             throw new AccessDeniedException("일반 회원이 사용하실 수 있는 기능입니다.");
         }

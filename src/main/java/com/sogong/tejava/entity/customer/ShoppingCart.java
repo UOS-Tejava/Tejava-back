@@ -1,10 +1,9 @@
 package com.sogong.tejava.entity.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Menu;
-import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -23,10 +22,11 @@ public class ShoppingCart extends BaseTimeEntity {
 
     private double total_price;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "shoppingCart")
     private List<Menu> menu = new ArrayList<>();
 
+    @JsonIgnore
     @OneToOne
     private User user;
-
 }

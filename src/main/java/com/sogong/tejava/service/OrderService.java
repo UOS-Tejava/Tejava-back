@@ -1,9 +1,6 @@
 package com.sogong.tejava.service;
 
-import com.sogong.tejava.dto.ChangeOptionsDTO;
-import com.sogong.tejava.dto.ChangeStyleDTO;
-import com.sogong.tejava.dto.OrderResponseDTO;
-import com.sogong.tejava.dto.ShoppingCartDTO;
+import com.sogong.tejava.dto.*;
 import com.sogong.tejava.entity.*;
 import com.sogong.tejava.entity.customer.OrderHistory;
 import com.sogong.tejava.entity.customer.User;
@@ -37,9 +34,10 @@ public class OrderService {
     double totalPrice = 0.0;
 
     // 주문하기
-    public OrderResponseDTO placeOrder(User customer, ShoppingCartDTO shoppingCartDTO, OrderDateTime orderDateTime) {
+    public OrderResponseDTO placeOrder(ShoppingCartDTO shoppingCartDTO, OrderDateTime orderDateTime) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(shoppingCartDTO.getUserId());
+        userRoleCheck(shoppingCartDTO.getUserId());
 
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
         List<Menu> menuList = shoppingCartDTO.getShoppingCart().getMenu();
@@ -82,9 +80,10 @@ public class OrderService {
     }
 
     // 주문한 내역에서 메뉴의 옵션 수정
-    public void updateMenuOptions(User customer, ChangeOptionsDTO changeOptionsDTO) {
+    public void updateMenuOptions(ChangeOptionsDTO changeOptionsDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(changeOptionsDTO.getUserId());
+        userRoleCheck(changeOptionsDTO.getUserId());
 
         OrderHistory orderHistory = customer.getOrderHistory();
 
@@ -121,9 +120,10 @@ public class OrderService {
         orderHistoryRepository.save(orderHistory);
     }
 
-    public void updateMenuStyle(User customer, ChangeStyleDTO changeStyleDTO) {
+    public void updateMenuStyle(ChangeStyleDTO changeStyleDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(changeStyleDTO.getUserId());
+        userRoleCheck(changeStyleDTO.getUserId());
 
         OrderHistory orderHistory = customer.getOrderHistory();
 
@@ -160,16 +160,17 @@ public class OrderService {
     }
 
     // 주문한 내역에서 주문 취소
-    public void cancelOrder(User customer, Long orderId) {
+    public void cancelOrder(CancelOrderDTO cancelOrderDTO) {
 
-        validateUser(customer);
+        User customer = userRepository.findUserById(cancelOrderDTO.getUserId());
+        userRoleCheck(cancelOrderDTO.getUserId());
 
         OrderHistory orderHistory = customer.getOrderHistory();
 
         List<Order> orderList = customer.getOrderHistory().getOrder();
         Order order = new Order();
         for (Order order1 : orderList) {
-            if (order1.getId().equals(orderId)) {
+            if (order1.getId().equals(cancelOrderDTO.getOrderId())) {
                 order = order1;
             }
         }
@@ -189,11 +190,10 @@ public class OrderService {
     }
 
     // 고객의 주문 내역 보여주기
-    public List<Menu> showOrderHistory(User customer) {
+    public List<Menu> showOrderHistory(UserIdDTO userIdDTO) {
 
-        if (customer == null) {
-            throw new IllegalStateException("로그인 이후에 사용해주세요.");
-        }
+        User customer = userRepository.findUserById(userIdDTO.getUserId());
+        userRoleCheck(userIdDTO.getUserId());
 
         OrderHistory orderHistory = customer.getOrderHistory();
 
@@ -205,13 +205,10 @@ public class OrderService {
     }
 
     // 고객의 주문 내역 모두 삭제하기
-    public void deleteOrderHistory(User customer) {
+    public void deleteOrderHistory(UserIdDTO userIdDTO) {
 
-        if (customer == null) {
-            throw new IllegalStateException("로그인 이후에 사용해주세요.");
-        }
-
-        validateUser(customer);
+        User customer = userRepository.findUserById(userIdDTO.getUserId());
+        userRoleCheck(userIdDTO.getUserId());
 
         OrderHistory orderHistory = customer.getOrderHistory();
         orderHistory.getOrder().clear();
@@ -251,8 +248,10 @@ public class OrderService {
         return styleList;
     }
 
-    public void validateUser(User user) {
-        if (user.getRole().equals(Role.ADMINISTRATOR)) {
+    public void userRoleCheck(Long userId) {
+        User user = userRepository.findUserById(userId);
+
+        if (!user.getRole().equals(Role.ADMINISTRATOR)) {
             throw new AccessDeniedException("일반 회원이 사용하실 수 있는 기능입니다.");
         }
     }

@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ChangeOptionsDTO {
 
+    private Long userId;
     private Long orderId;
     private Long menuId;
     private List<Options> newOptions;

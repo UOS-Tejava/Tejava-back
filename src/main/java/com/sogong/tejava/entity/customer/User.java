@@ -1,10 +1,12 @@
 package com.sogong.tejava.entity.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.converter.RoleConverter;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Role;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
@@ -32,9 +34,11 @@ public class User extends BaseTimeEntity {
 
     private int order_cnt; // 주문 횟수
 
-    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private OrderHistory orderHistory;
 
-    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private ShoppingCart shoppingCart;
 }

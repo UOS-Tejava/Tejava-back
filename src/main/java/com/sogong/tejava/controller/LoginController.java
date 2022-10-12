@@ -4,11 +4,12 @@ import com.sogong.tejava.dto.LoginDTO;
 import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.service.CartService;
 import com.sogong.tejava.service.UserService;
-import com.sogong.tejava.util.SessionConst;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class LoginController {
@@ -22,13 +23,12 @@ public class LoginController {
     }
 
     @GetMapping("/")
-    @ApiOperation(value = "홈 화면", notes = "첫 화면입니다. 세션을 가져와 회원을 반환합니다.")
-    public ResponseEntity<User> home(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) User loginMember) {
-        cartService.createCart(loginMember);
-        return ResponseEntity.ok().body(userService.home(loginMember));
+    @ApiOperation(value = "홈 화면", notes = "첫 화면입니다. 세션을 가져와 회원을 반환합니다.\n세션이 없다면 비회원으로 세션을 생성합니다.")
+    public ResponseEntity<User> home(HttpServletRequest request) {
+        return ResponseEntity.ok().body(userService.home(request));
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @ApiOperation(value = "로그인", notes = "아이디와 비밀번호로 로그인합니다.")
     public ResponseEntity<User> login(@Validated @RequestBody LoginDTO loginDTO) {
         return ResponseEntity.ok().body(userService.login(loginDTO.getUid(), loginDTO.getPwd(), loginDTO.getStaySignedIn()));

@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ShoppingCartDTO {
 
+    private Long userId;
     private ShoppingCart shoppingCart;
 }

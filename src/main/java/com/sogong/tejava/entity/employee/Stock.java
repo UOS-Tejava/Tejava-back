@@ -1,5 +1,6 @@
 package com.sogong.tejava.entity.employee;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class Stock extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "stock")
     private List<StockItem> stockItem = new ArrayList<>();
 }

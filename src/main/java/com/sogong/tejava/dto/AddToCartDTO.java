@@ -1,6 +1,6 @@
 package com.sogong.tejava.dto;
 
-import com.sogong.tejava.entity.Style;
+import com.sogong.tejava.entity.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeStyleDTO {
+public class AddToCartDTO {
 
     private Long userId;
-    private Long orderId;
-    private Long menuId;
-    private Style newStyle;
+    private Menu menu;
 }

@@ -1,5 +1,6 @@
 package com.sogong.tejava.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.customer.OrderHistory;
 import lombok.Data;
 
@@ -19,10 +20,12 @@ public class Order extends BaseTimeEntity {
     private OrderStatus order_status;
     private String option_to_string;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private List<Menu> menu;

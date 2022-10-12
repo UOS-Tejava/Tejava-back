@@ -1,5 +1,6 @@
 package com.sogong.tejava.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class Style {
     private String style_pic;
     private int price;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;

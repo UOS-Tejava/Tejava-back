@@ -2,15 +2,16 @@ package com.sogong.tejava.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.customer.ShoppingCart;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Table(name = "menu")
 @ToString
 public class Menu {

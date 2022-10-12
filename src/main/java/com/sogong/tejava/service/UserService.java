@@ -133,7 +133,7 @@ public class UserService {
         // 신규 세션 생성
         HttpSession session = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession();
 
-        if(loginMember.getShoppingCart() == null) {
+        if(!shoppingCartRepository.existsById(loginMember.getShoppingCart().getId())) {
             // 회원을 위한 장바구니 생성
             ShoppingCart shoppingCart = new ShoppingCart();
             shoppingCart.setUser(loginMember);
@@ -144,14 +144,15 @@ public class UserService {
             shoppingCartRepository.save(shoppingCart);
         }
 
-        if(loginMember.getOrderHistory() == null) {
+        if(!orderHistoryRepository.existsById(loginMember.getOrderHistory().getId())) {
             // 회원을 위한 주문 내역 테이블 생성
             OrderHistory orderHistory = new OrderHistory();
             orderHistory.setOrder(null);
             orderHistory.setUser(loginMember);
+            loginMember.setOrderHistory(orderHistory);
 
-            userRepository.save(loginMember);
             orderHistoryRepository.save(orderHistory);
+            userRepository.save(loginMember);
         }
 
         // 세션에 회원 정보 보관

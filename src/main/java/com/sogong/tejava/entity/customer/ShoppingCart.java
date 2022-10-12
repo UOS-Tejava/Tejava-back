@@ -3,16 +3,16 @@ package com.sogong.tejava.entity.customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Menu;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
-@ToString
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Table(name = "shopping_cart")
 public class ShoppingCart extends BaseTimeEntity {
 

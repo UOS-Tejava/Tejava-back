@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.converter.RoleConverter;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Role;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString(exclude = {"id", "pwd"})
 @Table(name = "user")
 public class User extends BaseTimeEntity {

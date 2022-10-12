@@ -1,8 +1,6 @@
-package com.sogong.tejava.entity.employee;
+package com.sogong.tejava.entity.style;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sogong.tejava.entity.BaseTimeEntity;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,14 +13,14 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "stock")
-public class Stock extends BaseTimeEntity {
+@Table(name = "style_list")
+public class StyleList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "stock")
-    private List<StockItem> stockItem = new ArrayList<>();
+    @OneToMany(mappedBy = "styleList")
+    private List<StyleItem> styleItem = new ArrayList<>();
 }

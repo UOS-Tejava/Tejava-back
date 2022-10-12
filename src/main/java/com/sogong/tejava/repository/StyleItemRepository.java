@@ -1,9 +1,9 @@
 package com.sogong.tejava.repository;
 
-import com.sogong.tejava.entity.Style;
+import com.sogong.tejava.entity.style.StyleItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StyleRepository extends JpaRepository<Style, Long> {
+public interface StyleItemRepository extends JpaRepository<StyleItem, Long> {
 }

@@ -1,7 +1,7 @@
 package com.sogong.tejava.service;
 
 import com.sogong.tejava.dto.*;
-import com.sogong.tejava.entity.Menu;
+import com.sogong.tejava.entity.customer.Menu;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.ShoppingCart;
 import com.sogong.tejava.entity.customer.User;

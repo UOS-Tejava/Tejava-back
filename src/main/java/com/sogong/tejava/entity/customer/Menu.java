@@ -1,7 +1,7 @@
-package com.sogong.tejava.entity;
+package com.sogong.tejava.entity.customer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sogong.tejava.entity.customer.ShoppingCart;
+import com.sogong.tejava.entity.Order;
 import lombok.*;
 
 import javax.persistence.*;
@@ -41,6 +41,6 @@ public class Menu {
     private List<Options> options = new ArrayList<>();
 
     @JsonIgnore
-    @OneToOne(mappedBy = "menu")
+    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY)
     private Style style;
 }

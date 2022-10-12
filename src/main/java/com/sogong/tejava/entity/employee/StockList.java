@@ -1,30 +1,26 @@
 package com.sogong.tejava.entity.employee;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sogong.tejava.entity.BaseTimeEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name="stock_item")
-public class StockItem  extends BaseTimeEntity {
+@Table(name = "stock_list")
+public class StockList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String stock_item_nm;
-    private String stock_item_pic;
-    private int quantity;
-
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_list_id")
-    private StockList stockList;
+    @OneToMany(mappedBy = "stockList")
+    private List<StockItem> stockItem = new ArrayList<>();
 }

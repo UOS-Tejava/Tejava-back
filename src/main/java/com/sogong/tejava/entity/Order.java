@@ -1,8 +1,8 @@
 package com.sogong.tejava.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sogong.tejava.entity.customer.Menu;
 import com.sogong.tejava.entity.customer.OrderHistory;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -10,10 +10,13 @@ import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.repository.OrderRepository;
 import com.sogong.tejava.repository.StockRepository;
 import com.sogong.tejava.repository.UserRepository;
+import com.sogong.tejava.util.Const;
+import com.sogong.tejava.util.SessionConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Service
@@ -37,15 +40,18 @@ public class EmployeeService {
     }
 
     // 모든 주문 조회
-    public List<Order> getOrderList(UserIdDTO userIdDTO) {
+    public List<Order> getOrderList(HttpServletRequest request, UserIdDTO userIdDTO) {
 
+        requestCheck(request, userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
+
         return orderRepository.findAll();
     }
 
     // 주문 상태 변경하기
-    public void updateOrderStatus(UserIdDTO userIdDTO, ChangeOrderStatusDTO changeOrderStatusDTO) {
+    public void updateOrderStatus(HttpServletRequest request, UserIdDTO userIdDTO, ChangeOrderStatusDTO changeOrderStatusDTO) {
 
+        requestCheck(request, userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
 
         Order order = orderRepository.findOrderById(changeOrderStatusDTO.getOrderId());
@@ -57,8 +63,8 @@ public class EmployeeService {
         order.setOrder_status(changeOrderStatusDTO.getOrderStatus());
 
         // 비회원 주문이었고, 배달 완료 상태로 바꾼다면 비회원을 테이블에서 삭제! -> cascade 로 장바구니도 사라짐
-        if(changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
-            if(userRepository.findUserById(userIdDTO.getUserId()).getRole().equals(Role.NOT_MEMBER)) {
+        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
+            if (userRepository.findUserById(userIdDTO.getUserId()).getRole().equals(Role.NOT_MEMBER)) {
                 userRepository.delete(userRepository.findUserById(userIdDTO.getUserId()));
             }
         }
@@ -66,10 +72,19 @@ public class EmployeeService {
     }
 
     // 재고 현황 보여주기
-    public List<StockItem> showStockInfo(UserIdDTO userIdDTO) {
+    public List<StockItem> showStockInfo(HttpServletRequest request, UserIdDTO userIdDTO) {
 
+        requestCheck(request, userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
+
         return stockRepository.findAll();
+    }
+
+    // 일반 유저가 직원의 id 알아서 악의적으로 요청하는 경우를 체크
+    public void requestCheck(HttpServletRequest request, Long userId) {
+        if (!((User) request.getSession().getAttribute(SessionConst.LOGIN_MEMBER)).getRole().equals(userRepository.findUserById(userId).getRole())) {
+            throw new IllegalStateException("잘못된 접근입니다.");
+        }
     }
 
     // 관리자 권한이 있는 지 확인하기

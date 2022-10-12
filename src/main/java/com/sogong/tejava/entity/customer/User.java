@@ -5,7 +5,6 @@ import com.sogong.tejava.converter.RoleConverter;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Role;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 

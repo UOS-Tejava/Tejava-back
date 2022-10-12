@@ -1,6 +1,6 @@
 package com.sogong.tejava.dto;
 
-import com.sogong.tejava.entity.Style;
+import com.sogong.tejava.entity.customer.Style;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

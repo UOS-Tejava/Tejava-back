@@ -3,7 +3,6 @@ package com.sogong.tejava.entity.customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Order;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,7 +23,7 @@ public class OrderHistory extends BaseTimeEntity {
     private Long id;
 
     @JsonIgnore
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

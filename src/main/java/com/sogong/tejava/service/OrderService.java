@@ -2,8 +2,10 @@ package com.sogong.tejava.service;
 
 import com.sogong.tejava.dto.*;
 import com.sogong.tejava.entity.*;
-import com.sogong.tejava.entity.customer.OrderHistory;
-import com.sogong.tejava.entity.customer.User;
+import com.sogong.tejava.entity.customer.*;
+import com.sogong.tejava.entity.menu.MenuItem;
+import com.sogong.tejava.entity.options.OptionsItem;
+import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.repository.*;
 import com.sogong.tejava.util.OrderDateTime;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +30,9 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final OrderHistoryRepository orderHistoryRepository;
-    private final MenuRepository menuRepository;
-    private final OptionsRepository optionsRepository;
-    private final StyleRepository styleRepository;
+    private final MenuItemRepository menuItemRepository;
+    private final OptionsItemRepository optionsItemRepository;
+    private final StyleItemRepository styleItemRepository;
     double totalPrice = 0.0;
 
     // 주문하기
@@ -216,33 +218,30 @@ public class OrderService {
         orderHistoryRepository.save(orderHistory);
     }
 
-    public List<Menu> showAllMenus() {
-        return menuRepository.findAll();
+    public List<MenuItem> showAllMenus() {
+        return menuItemRepository.findAll();
     }
 
-    public List<Options> showAllOptions(Long menuId) {
-        List<Options> array = optionsRepository.findAll();
-        List<Options> optionsList = new ArrayList<>();
+    public List<OptionsItem> showAllOptions(Long menuId) {
+        List<OptionsItem> array = optionsItemRepository.findAll();
+        List<OptionsItem> optionsList = new ArrayList<>();
 
         // 메뉴별로 보여지는 옵션이 다르기에 고유한 아이디를 매개변수로 받아 해당 메뉴의 옵션만 보여주기 위함
-        for (Options option : array) {
-            if (option.getMenu().getId().equals(menuId)) {
-                optionsList.add(option);
+        for (OptionsItem optionsItem : array) {
+            if (optionsItem.getMenuItem().getId().equals(menuId)) {
+                optionsList.add(optionsItem);
             }
         }
 
         return optionsList;
     }
 
-    public List<Style> showAllStyles(Long menuId) {
-        List<Style> array = styleRepository.findAll();
-        List<Style> styleList = new ArrayList<>();
+    public List<StyleItem> showAllStyles(Long menuId) {
+        List<StyleItem> styleList = styleItemRepository.findAll();
 
-        // 메뉴별로 보여지는 스타일이 다르기에 고유한 아이디를 매개변수로 받아 해당 메뉴의 스타일만 보여주기 위함
-        for (Style style : array) {
-            if (style.getMenu().getId().equals(menuId)) {
-                styleList.add(style);
-            }
+        // 샴페인 축제 디너의 경우, 심플 디너 스타일을 제공하지 않음!
+        if(menuId.equals(4L)) {
+            styleList.remove(0);
         }
 
         return styleList;

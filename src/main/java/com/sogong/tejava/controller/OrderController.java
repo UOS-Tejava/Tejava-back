@@ -1,9 +1,10 @@
 package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.*;
-import com.sogong.tejava.entity.Menu;
-import com.sogong.tejava.entity.Options;
-import com.sogong.tejava.entity.Style;
+import com.sogong.tejava.entity.customer.Menu;
+import com.sogong.tejava.entity.menu.MenuItem;
+import com.sogong.tejava.entity.options.OptionsItem;
+import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.service.OrderService;
 import com.sogong.tejava.util.OrderDateTime;
 import io.swagger.annotations.ApiOperation;
@@ -76,25 +77,25 @@ public class OrderController {
 
     @GetMapping("/order/showAllMenus")
     @ApiOperation(value = "모든 메뉴 보여주기", notes = "리스트 형식으로 반환합니다.")
-    public ResponseEntity<List<Menu>> showAllMenus() {
+    public ResponseEntity<List<MenuItem>> showAllMenus() {
 
-        List<Menu> menuList = orderService.showAllMenus();
+        List<MenuItem> menuList = orderService.showAllMenus();
         return ResponseEntity.ok().body(menuList);
     }
 
     @GetMapping("/order/showAllOptions/menuId/{menuId}")
     @ApiOperation(value = "모든 옵션 보여주기", notes = "메뉴별 선택할 수 있는 옵션이 다르며, 리스트 형식으로 반환합니다.")
-    public ResponseEntity<List<Options>> showAllOptions(@PathVariable Long menuId) {
+    public ResponseEntity<List<OptionsItem>> showAllOptions(@PathVariable Long menuId) {
 
-        List<Options> optionsList = orderService.showAllOptions(menuId);
+        List<OptionsItem> optionsList = orderService.showAllOptions(menuId);
         return ResponseEntity.ok().body(optionsList);
     }
 
     @GetMapping("/order/showAllStyles/menuId/{menuId}")
     @ApiOperation(value = "모든 스타일 보여주기", notes = "메뉴별 선택할 수 있는 스타일이 다르며, 리스트 형식으로 반환합니다.")
-    public ResponseEntity<List<Style>> showAllStyles(@PathVariable Long menuId) {
+    public ResponseEntity<List<StyleItem>> showAllStyles(@PathVariable Long menuId) {
 
-        List<Style> styleList = orderService.showAllStyles(menuId);
+        List<StyleItem> styleList = orderService.showAllStyles(menuId);
         return ResponseEntity.ok().body(styleList);
     }
 }

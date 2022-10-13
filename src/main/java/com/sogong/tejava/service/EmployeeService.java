@@ -80,18 +80,23 @@ public class EmployeeService {
                         switch (option.getOption_nm()) {
                             case "와인 한 잔":
                                 wine.setQuantity(wine.getQuantity() - 1);
+                                break;
                             case "커피 한 잔":
                                 coffee.setQuantity(coffee.getQuantity() - 1);
+                                break;
                             case "치즈":
                                 cheese.setQuantity(cheese.getQuantity() - 1);
+                                break;
                             case "샐러드":
                                 salad.setQuantity(salad.getQuantity() - 1);
+                                break;
                             case "빵":
-                                bread.setQuantity(bread.getQuantity() - 1);
                             case "바게트 빵":
                                 bread.setQuantity(bread.getQuantity() - 1);
+                                break;
                             case "샴페인 한 병":
                                 champagne.setQuantity(champagne.getQuantity() - 1);
+                                break;
                         }
                     }
                 }

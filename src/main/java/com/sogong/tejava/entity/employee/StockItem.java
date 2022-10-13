@@ -22,9 +22,4 @@ public class StockItem  extends BaseTimeEntity {
     private String stock_item_nm;
     private String stock_item_pic;
     private int quantity;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_list_id")
-    private StockList stockList;
 }

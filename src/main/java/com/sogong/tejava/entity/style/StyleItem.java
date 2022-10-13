@@ -23,9 +23,4 @@ public class StyleItem extends BaseTimeEntity {
     private String style_config;
     private String style_pic;
     private int price;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "style_list_id")
-    private StyleList styleList;
 }

@@ -5,12 +5,13 @@ import com.sogong.tejava.dto.UserIdDTO;
 import com.sogong.tejava.entity.Order;
 import com.sogong.tejava.entity.OrderStatus;
 import com.sogong.tejava.entity.Role;
+import com.sogong.tejava.entity.customer.Menu;
+import com.sogong.tejava.entity.customer.Options;
 import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.repository.OrderRepository;
 import com.sogong.tejava.repository.StockRepository;
 import com.sogong.tejava.repository.UserRepository;
-import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.SessionConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,7 +26,8 @@ public class EmployeeService {
     1. 들어온 주문 조회
     2. 주문의 상태 변경하기(pending, cooking, delivering, completed)
     3. 재고 현황 보여주기
-    (4. 관리자 권한이 있는 지 확인하기)
+    (4. 현재 세션에 있는 유저의 권한과 파라미터로 받은 유저의 권한이 동일한 지 확인하기)
+    (5. 관리자 권한이 있는 지 확인하기)
      */
 
     private final StockRepository stockRepository;
@@ -62,6 +64,46 @@ public class EmployeeService {
 
         order.setOrder_status(changeOrderStatusDTO.getOrderStatus());
 
+        // 조리 중으로 상태가 바뀌는 경우, 재고 현황에 반영할 것
+        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.cooking)) {
+            StockItem wine = stockRepository.findAll().get(0);
+            StockItem coffee = stockRepository.findAll().get(2);
+            StockItem cheese = stockRepository.findAll().get(4);
+            StockItem salad = stockRepository.findAll().get(3);
+            StockItem bread = stockRepository.findAll().get(5);
+            StockItem champagne = stockRepository.findAll().get(1);
+
+            // 재고 현황에 반영
+            for (Order order1 : orderRepository.findAll()) {
+                for (Menu menu : order1.getMenu()) {
+                    for (Options option : menu.getOptions()) {
+                        switch (option.getOption_nm()) {
+                            case "와인 한 잔":
+                                wine.setQuantity(wine.getQuantity() - 1);
+                            case "커피 한 잔":
+                                coffee.setQuantity(coffee.getQuantity() - 1);
+                            case "치즈":
+                                cheese.setQuantity(cheese.getQuantity() - 1);
+                            case "샐러드":
+                                salad.setQuantity(salad.getQuantity() - 1);
+                            case "빵":
+                                bread.setQuantity(bread.getQuantity() - 1);
+                            case "바게트 빵":
+                                bread.setQuantity(bread.getQuantity() - 1);
+                            case "샴페인 한 병":
+                                champagne.setQuantity(champagne.getQuantity() - 1);
+                        }
+                    }
+                }
+            }
+            stockRepository.save(wine);
+            stockRepository.save(coffee);
+            stockRepository.save(cheese);
+            stockRepository.save(salad);
+            stockRepository.save(bread);
+            stockRepository.save(champagne);
+        }
+
         // 비회원 주문이었고, 배달 완료 상태로 바꾼다면 비회원을 테이블에서 삭제! -> cascade 로 장바구니도 사라짐
         if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
             if (userRepository.findUserById(userIdDTO.getUserId()).getRole().equals(Role.NOT_MEMBER)) {
@@ -82,7 +124,7 @@ public class EmployeeService {
 
     // 일반 유저가 직원의 id 알아서 악의적으로 요청하는 경우를 체크
     public void requestCheck(HttpServletRequest request, Long userId) {
-        if (!((User) request.getSession().getAttribute(SessionConst.LOGIN_MEMBER)).getRole().equals(userRepository.findUserById(userId).getRole())) {
+        if (((User) request.getSession().getAttribute(SessionConst.LOGIN_MEMBER)).getRole().equals(Role.USER) || userRepository.findUserById(userId).getRole().equals(Role.USER)) {
             throw new IllegalStateException("잘못된 접근입니다.");
         }
     }

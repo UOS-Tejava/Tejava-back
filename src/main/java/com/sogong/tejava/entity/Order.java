@@ -34,5 +34,4 @@ public class Order extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_table_id", referencedColumnName = "id")
     private List<Menu> menu;
-
 }

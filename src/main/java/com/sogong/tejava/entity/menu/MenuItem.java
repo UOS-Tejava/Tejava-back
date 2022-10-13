@@ -28,11 +28,6 @@ public class MenuItem extends BaseTimeEntity {
     private int price;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_List_id")
-    private MenuList menuList;
-
-    @JsonIgnore
     @OneToMany(mappedBy = "menuItem")
     private List<OptionsItem> optionsItem = new ArrayList<>();
 }

@@ -21,7 +21,6 @@ public class ShoppingCart extends BaseTimeEntity {
 
     private double total_price;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "shoppingCart")
     private List<Menu> menu = new ArrayList<>();
 

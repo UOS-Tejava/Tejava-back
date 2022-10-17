@@ -36,11 +36,9 @@ public class Menu {
     @JoinColumn(name = "order_table_id")
     private Order order;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "menu")
     private List<Options> options = new ArrayList<>();
 
-    @JsonIgnore
     @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY)
     private Style style;
 }

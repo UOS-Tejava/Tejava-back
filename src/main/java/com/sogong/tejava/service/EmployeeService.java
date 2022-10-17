@@ -51,10 +51,10 @@ public class EmployeeService {
     }
 
     // 주문 상태 변경하기
-    public void updateOrderStatus(HttpServletRequest request, UserIdDTO userIdDTO, ChangeOrderStatusDTO changeOrderStatusDTO) {
+    public void updateOrderStatus(HttpServletRequest request, ChangeOrderStatusDTO changeOrderStatusDTO) {
 
-        requestCheck(request, userIdDTO.getUserId());
-        userRoleCheck(userIdDTO.getUserId());
+        requestCheck(request, changeOrderStatusDTO.getUserId());
+        userRoleCheck(changeOrderStatusDTO.getUserId());
 
         Order order = orderRepository.findOrderById(changeOrderStatusDTO.getOrderId());
 
@@ -64,9 +64,9 @@ public class EmployeeService {
 
         order.setOrder_status(changeOrderStatusDTO.getOrderStatus());
 
-        // 조리 중으로 상태가 바뀌는 경우, 재고 현황에 반영할 것
-        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.cooking)) {
-            StockItem wine = stockRepository.findAll().get(0);
+        // 배달완료로 상태가 바뀌는 경우, 재고 현황에 반영할 것
+        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
+            StockItem wine = stockRepository.findAll().get(0); // TODO: 수정할 것
             StockItem coffee = stockRepository.findAll().get(2);
             StockItem cheese = stockRepository.findAll().get(4);
             StockItem salad = stockRepository.findAll().get(3);
@@ -111,8 +111,8 @@ public class EmployeeService {
 
         // 비회원 주문이었고, 배달 완료 상태로 바꾼다면 비회원을 테이블에서 삭제! -> cascade 로 장바구니도 사라짐
         if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
-            if (userRepository.findUserById(userIdDTO.getUserId()).getRole().equals(Role.NOT_MEMBER)) {
-                userRepository.delete(userRepository.findUserById(userIdDTO.getUserId()));
+            if (userRepository.findUserById(changeOrderStatusDTO.getUserId()).getRole().equals(Role.NOT_MEMBER)) {
+                userRepository.delete(userRepository.findUserById(changeOrderStatusDTO.getUserId()));
             }
         }
         orderRepository.save(order);

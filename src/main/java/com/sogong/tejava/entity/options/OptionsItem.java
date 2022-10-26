@@ -24,6 +24,7 @@ public class OptionsItem extends BaseTimeEntity {
     private String option_nm;
     private String option_pic;
     private int price;
+    private int quantity;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

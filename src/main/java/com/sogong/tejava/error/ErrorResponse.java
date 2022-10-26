@@ -10,14 +10,16 @@ import java.util.Calendar;
 @Setter
 public class ErrorResponse {
     private String timeStamp;
-    private String code;
+    private String status;
+    private String error;
     private String message;
 
-    public ErrorResponse(String code, String message) {
+    public ErrorResponse(String status, String error, String message) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
 
-        this.code = code;
-        this.message = message;
         this.timeStamp = formatter.format(Calendar.getInstance().getTime());
+        this.status = status;
+        this.error = error;
+        this.message = message;
     }
 }

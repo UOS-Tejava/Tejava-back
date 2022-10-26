@@ -2,13 +2,12 @@ package com.sogong.tejava.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.MethodNotAllowedException;
 
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /*
@@ -23,36 +22,36 @@ public class GlobalExceptionHandler {
     MethodNotAllowedException : 잘못된 url 로 api 요청하는 경우
 
     <에러코드 500>
-    IllegalStateException : 폼에서 기존의 회원 정보와 중복 발생 / 비밀번호와 확인용 비밀번호 불일치 / 회원탈퇴 시 비밀번호 틀렸을 때
+    IllegalStateException : 폼에서 기존의 회원 정보와 중복 발생 / 비밀번호와 확인용 비밀번호 불일치 / 회원탈퇴 시 비밀번호 틀렸을 때 / 접수 대기 중 상태아닌데 주문 수정을 할 때
      */
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
 
-        return ResponseEntity.badRequest().body(new ErrorResponse("400", e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponse("400", "Method Argument Not Valid Error", e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
     }
 
     @ExceptionHandler(MethodNotAllowedException.class)
     public ResponseEntity<ErrorResponse> methodNotAllowedExceptionHandler(MethodNotAllowedException e) {
 
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse("405", e.getMessage()));
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse("405", "Method Not Allowed Error", e.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> illegalStateExceptionHandler(IllegalStateException e) {
 
-        return ResponseEntity.internalServerError().body(new ErrorResponse("500", e.getMessage()));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("500", "Illegal State Error", e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> IllegalArgumentExceptionHandler(IllegalArgumentException e) {
 
-        return ResponseEntity.internalServerError().body(new ErrorResponse("500", e.getMessage()));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("500", "Illegal Argument Error", e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ErrorResponse exceptionHandler(Exception e) {
 
-        return new ErrorResponse("Unspecified", e.getMessage());
+        return new ErrorResponse("Unspecified", "Unspecified error", e.getMessage());
     }
 }

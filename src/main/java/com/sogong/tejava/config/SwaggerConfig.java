@@ -1,5 +1,6 @@
 package com.sogong.tejava.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -12,17 +13,19 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
+@RequiredArgsConstructor
 public class SwaggerConfig {
 
     @Bean
     public Docket swaggerAPI() {
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(this.swaggerInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.sogong.tejava.controller"))
                 .paths(PathSelectors.any()) // 모든 url 에 대해 명세서 작성
                 .build()
-                .useDefaultResponseMessages(true);
+                .useDefaultResponseMessages(false);
     }
 
     private ApiInfo swaggerInfo() {

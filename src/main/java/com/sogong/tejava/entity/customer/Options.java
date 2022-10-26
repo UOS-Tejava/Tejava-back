@@ -1,7 +1,6 @@
-package com.sogong.tejava.entity.employee;
+package com.sogong.tejava.entity.customer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sogong.tejava.entity.BaseTimeEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -12,14 +11,20 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name="stock_item")
-public class StockItem  extends BaseTimeEntity {
+@Table(name = "options")
+public class Options {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String stock_item_nm;
-    private String stock_item_pic;
+    private String option_nm;
+    private String option_pic;
+    private int price;
     private int quantity;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
 }

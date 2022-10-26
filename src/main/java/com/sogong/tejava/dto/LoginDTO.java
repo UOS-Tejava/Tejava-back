@@ -18,5 +18,4 @@ public class LoginDTO { // 로그인 폼
     private String pwd;
 
     private Boolean staySignedIn; // 로그인 상태 유지
-    private Boolean loginAsAdmin; // 직원 로그인
 }

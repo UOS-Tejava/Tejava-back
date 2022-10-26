@@ -16,6 +16,8 @@ public class RoleConverter implements AttributeConverter<Role, String> {
                 return "user";
             case ADMINISTRATOR:
                 return "administrator";
+            case NOT_MEMBER:
+                return "not_member";
             default:
                 throw new IllegalArgumentException("UserRole [" + role + "] not supported");
         }
@@ -28,6 +30,9 @@ public class RoleConverter implements AttributeConverter<Role, String> {
                 return Role.USER;
             case "administrator":
                 return Role.ADMINISTRATOR;
+            case "not_member":
+                return Role.NOT_MEMBER;
+
             default:
                 throw new IllegalArgumentException("UserRole [" + dbData + "] not supported");
         }

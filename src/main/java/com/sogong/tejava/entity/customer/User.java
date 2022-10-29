@@ -35,10 +35,10 @@ public class User extends BaseTimeEntity {
     private int order_cnt; // 주문 횟수
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private OrderHistory orderHistory;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private ShoppingCart shoppingCart;
 }

@@ -1,10 +1,6 @@
 package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.*;
-import com.sogong.tejava.entity.customer.Menu;
-import com.sogong.tejava.entity.menu.MenuItem;
-import com.sogong.tejava.entity.options.OptionsItem;
-import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.service.OrderService;
 import com.sogong.tejava.util.OrderDateTime;
 import io.swagger.annotations.ApiOperation;
@@ -53,16 +49,16 @@ public class OrderController {
     // 주문하기 : 결제 정보는 프론트에서만 다루고 db에 따로 저장하진 않는 것으로 결정
     @PostMapping("/order/placeOrder")
     @ApiOperation(value = "주문하기", notes = "회원의 주문 내역과 직원 인터페이스 화면의 주문 목록에도 추가되며, 주문 횟수가 1 늘어납니다.")
-    public ResponseEntity<OrderResponseDTO> placeOrder(@RequestBody ShoppingCartDTO shoppingCartDTO, @RequestBody OrderDateTime orderDateTime) {
+    public ResponseEntity<OrderResultDTO> placeOrder(@RequestBody ShoppingCartDTO shoppingCartDTO, @RequestBody OrderDateTime orderDateTime) {
 
-        OrderResponseDTO orderResponseDTO = orderService.placeOrder(shoppingCartDTO, orderDateTime);
-        return ResponseEntity.ok().body(orderResponseDTO);
+        OrderResultDTO orderResultDTO = orderService.placeOrder(shoppingCartDTO, orderDateTime);
+        return ResponseEntity.ok().body(orderResultDTO);
     }
 
     // 회원의 주문 내역 반환하기
     @PostMapping("/order/history")
     @ApiOperation(value = "주문 내역 보여주기", notes = "회원의 주문 내역을 반환합니다.")
-    public ResponseEntity<List<Menu>> showOrderHistory(@RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<MenuDTO>> showOrderHistory(@RequestBody UserIdDTO userIdDTO) {
 
         return ResponseEntity.ok().body(orderService.showOrderHistory(userIdDTO));
     }
@@ -77,25 +73,25 @@ public class OrderController {
 
     @GetMapping("/order/showAllMenus")
     @ApiOperation(value = "모든 메뉴 보여주기", notes = "리스트 형식으로 반환합니다.")
-    public ResponseEntity<List<MenuItem>> showAllMenus() {
+    public ResponseEntity<List<MenuItemDTO>> showAllMenus() {
 
-        List<MenuItem> menuList = orderService.showAllMenus();
+        List<MenuItemDTO> menuList = orderService.showAllMenus();
         return ResponseEntity.ok().body(menuList);
     }
 
     @GetMapping("/order/showAllOptions/menuId/{menuId}")
     @ApiOperation(value = "모든 옵션 보여주기", notes = "메뉴별 선택할 수 있는 옵션이 다르며, 리스트 형식으로 반환합니다.")
-    public ResponseEntity<List<OptionsItem>> showAllOptions(@PathVariable Long menuId) {
+    public ResponseEntity<List<OptionsDTO>> showAllOptions(@PathVariable Long menuId) {
 
-        List<OptionsItem> optionsList = orderService.showAllOptions(menuId);
+        List<OptionsDTO> optionsList = orderService.showAllOptions(menuId);
         return ResponseEntity.ok().body(optionsList);
     }
 
     @GetMapping("/order/showAllStyles/menuId/{menuId}")
     @ApiOperation(value = "모든 스타일 보여주기", notes = "메뉴별 선택할 수 있는 스타일이 다르며, 리스트 형식으로 반환합니다.")
-    public ResponseEntity<List<StyleItem>> showAllStyles(@PathVariable Long menuId) {
+    public ResponseEntity<List<StyleDTO>> showAllStyles(@PathVariable Long menuId) {
 
-        List<StyleItem> styleList = orderService.showAllStyles(menuId);
+        List<StyleDTO> styleList = orderService.showAllStyles(menuId);
         return ResponseEntity.ok().body(styleList);
     }
 }

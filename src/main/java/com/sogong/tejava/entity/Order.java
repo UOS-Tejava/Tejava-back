@@ -3,6 +3,7 @@ package com.sogong.tejava.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.customer.Menu;
 import com.sogong.tejava.entity.customer.OrderHistory;
+import com.sogong.tejava.entity.customer.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,4 +35,15 @@ public class Order extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_table_id", referencedColumnName = "id")
     private List<Menu> menu;
+
+    public static Order createOrder(User user) {
+        Order order = new Order();
+        order.setOrderHistory(user.getOrderHistory());
+        order.setMenu(null);
+        order.setTotal_price(0.0);
+        order.setOption_to_string("");
+        order.setOrder_status(null);
+
+        return order;
+    }
 }

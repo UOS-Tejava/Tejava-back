@@ -2,6 +2,8 @@ package com.sogong.tejava.service;
 
 import com.sogong.tejava.dto.ChangeOrderStatusDTO;
 import com.sogong.tejava.dto.UserIdDTO;
+import com.sogong.tejava.dto.OrderDTO;
+import com.sogong.tejava.dto.StockItemDTO;
 import com.sogong.tejava.entity.Order;
 import com.sogong.tejava.entity.OrderStatus;
 import com.sogong.tejava.entity.Role;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -41,13 +44,13 @@ public class EmployeeService {
         this.userRepository = userRepository;
     }
 
-    // 모든 주문 조회
-    public List<Order> getOrderList(HttpServletRequest request, UserIdDTO userIdDTO) {
+    // 들어온 모든 주문 조회
+    public List<OrderDTO> getOrderList(HttpServletRequest request, UserIdDTO userIdDTO) {
 
         requestCheck(request, userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
 
-        return orderRepository.findAll();
+        return orderRepository.findAll().stream().map(OrderDTO::from).collect(Collectors.toList());
     }
 
     // 주문 상태 변경하기
@@ -119,12 +122,12 @@ public class EmployeeService {
     }
 
     // 재고 현황 보여주기
-    public List<StockItem> showStockInfo(HttpServletRequest request, UserIdDTO userIdDTO) {
+    public List<StockItemDTO> showStockInfo(HttpServletRequest request, UserIdDTO userIdDTO) {
 
         requestCheck(request, userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
 
-        return stockRepository.findAll();
+        return stockRepository.findAll().stream().map(StockItemDTO::from).collect(Collectors.toList());
     }
 
     // 일반 유저가 직원의 id 알아서 악의적으로 요청하는 경우를 체크

@@ -36,26 +36,17 @@ public class ShoppingCartController {
         return ResponseEntity.ok().build();
     }
 
-    // 카트에 담긴 메뉴 아이템의 옵션 수정하기
-    @PatchMapping("/cart/update/options")
-    @ApiOperation(value = "장바구니의 메뉴 옵션 수정하기", notes = "장바구니 목록에서 아이템을 선택하여 옵션을 수정합니다.")
-    public ResponseEntity<?> updateMenuOptions(@RequestBody ChangeOptionsDTO changeOptionsDTO) {
+    // 카트에 담긴 메뉴 아이템의 옵션/스타일(menu detail) 수정하기
+    @PatchMapping("/cart/update/menu-detail")
+    @ApiOperation(value = "장바구니의 메뉴 옵션/스타일 수정하기", notes = "장바구니 목록에서 아이템을 선택하여 옵션/스타일을 수정합니다.\n여기선 orderId의 값을 주지 않아도 됩니다.")
+    public ResponseEntity<?> updateMenuDetail(@RequestBody ChangeMenuDetailDTO changeMenuDetailDTO) {
 
-        cartService.updateMenuOptions(changeOptionsDTO);
-        return ResponseEntity.ok().build();
-    }
-
-    // 카트에 담긴 메뉴 아이템의 스타일 수정하기
-    @PatchMapping("/cart/update/style")
-    @ApiOperation(value = "장바구니의 메뉴 스타일 수정하기", notes = "장바구니 목록에서 아이템을 선택하여 스타일을 수정합니다.")
-    public ResponseEntity<?> updateMenuOptions(@RequestBody ChangeStyleDTO changeStyleDTO) {
-
-        cartService.updateMenuStyle(changeStyleDTO);
+        cartService.updateMenuDetail(changeMenuDetailDTO);
         return ResponseEntity.ok().build();
     }
 
     // 카트의 메뉴 아이템 한 개 삭제하기
-    @DeleteMapping("/cart/delete-one/{menuId}")
+    @DeleteMapping("/cart/delete-one")
     @ApiOperation(value = "장바구니에서 메뉴 한 개 삭제하기", notes = "장바구니 목록에서 하나의 아이템 옆의 휴지통을 클릭하여 실행합니다.")
     public ResponseEntity<?> deleteOne(@RequestBody CancelMenuFromCartDTO cancelMenuFromCartDTO) {
 

@@ -36,9 +36,9 @@ public class Menu {
     @JoinColumn(name = "order_table_id")
     private Order order;
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.REMOVE)
     private List<Options> options = new ArrayList<>();
 
-    @OneToOne(mappedBy = "menu", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "menu", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Style style;
 }

@@ -4,11 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddToCartDTO {
+public class ChangeMenuDetailDTO {
 
     private Long userId;
-    private MenuDTO menu;
+    private Long orderId;
+    private Long menuId;
+    private List<OptionsDTO> newOptions;
+    private StyleDTO newStyle;
 }

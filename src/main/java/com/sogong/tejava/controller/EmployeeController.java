@@ -2,8 +2,8 @@ package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.ChangeOrderStatusDTO;
 import com.sogong.tejava.dto.UserIdDTO;
-import com.sogong.tejava.entity.Order;
-import com.sogong.tejava.entity.employee.StockItem;
+import com.sogong.tejava.dto.OrderDTO;
+import com.sogong.tejava.dto.StockItemDTO;
 import com.sogong.tejava.service.EmployeeService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +24,9 @@ public class EmployeeController {
     // 주문 현황 보여주기
     @PostMapping("/employee/orders")
     @ApiOperation(value = "주문 현황 조회하기", notes = "직원 인터페이스의 홈화면에서 접수된 주문 목록을 확인할 수 있습니다.")
-    public ResponseEntity<List<Order>> showOrders(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<OrderDTO>> showOrders(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
 
-        List<Order> orderList = employeeService.getOrderList(request, userIdDTO);
+        List<OrderDTO> orderList = employeeService.getOrderList(request, userIdDTO);
         return ResponseEntity.ok().body(orderList);
     }
 
@@ -42,9 +42,9 @@ public class EmployeeController {
     // 재고 현황 보여주기
     @PostMapping("/employee/stock-info")
     @ApiOperation(value = "재고 현황 보여주기", notes = "재료와 마실 것(커피, 와인, 샴페인의 재고를 인분을 기준으로 보여줍니다.")
-    public ResponseEntity<List<StockItem>> showStockInfo(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<StockItemDTO>> showStockInfo(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
 
-        List<StockItem> stockItemList = employeeService.showStockInfo(request, userIdDTO);
+        List<StockItemDTO> stockItemList = employeeService.showStockInfo(request, userIdDTO);
         return ResponseEntity.ok().body(stockItemList);
     }
 }

@@ -1,6 +1,5 @@
 package com.sogong.tejava.dto;
 
-import com.sogong.tejava.entity.customer.Options;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +14,5 @@ public class ChangeOptionsDTO {
     private Long userId;
     private Long orderId;
     private Long menuId;
-    private List<Options> newOptions;
+    private List<OptionsDTO> newOptions;
 }

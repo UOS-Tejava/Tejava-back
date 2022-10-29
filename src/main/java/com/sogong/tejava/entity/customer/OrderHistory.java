@@ -30,4 +30,12 @@ public class OrderHistory extends BaseTimeEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "orderHistory")
     private List<Order> order = new ArrayList<>();
+
+    public static OrderHistory createOrderHistory(User user) {
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setOrder(null);
+        orderHistory.user = user;
+
+        return orderHistory;
+    }
 }

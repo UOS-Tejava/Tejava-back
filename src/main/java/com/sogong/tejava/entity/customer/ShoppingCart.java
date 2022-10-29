@@ -21,10 +21,22 @@ public class ShoppingCart extends BaseTimeEntity {
 
     private double total_price;
 
-    @OneToMany(mappedBy = "shoppingCart")
+    @JsonIgnore
+    @OneToMany(mappedBy = "shoppingCart", fetch = FetchType.EAGER)
     private List<Menu> menu = new ArrayList<>();
 
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
+
+    public static ShoppingCart createCart(User user) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setMenu(null);
+        shoppingCart.setTotal_price(0.0);
+        shoppingCart.user = user;
+
+        return shoppingCart;
+    }
+
+
 }

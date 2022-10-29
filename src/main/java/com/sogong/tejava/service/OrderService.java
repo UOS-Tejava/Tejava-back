@@ -3,7 +3,6 @@ package com.sogong.tejava.service;
 import com.sogong.tejava.dto.*;
 import com.sogong.tejava.entity.*;
 import com.sogong.tejava.entity.customer.*;
-import com.sogong.tejava.entity.menu.MenuItem;
 import com.sogong.tejava.entity.options.OptionsItem;
 import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.repository.*;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,12 +36,12 @@ public class OrderService {
     double totalPrice = 0.0;
 
     // 주문하기
-    public OrderResponseDTO placeOrder(ShoppingCartDTO shoppingCartDTO, OrderDateTime orderDateTime) {
+    public OrderResultDTO placeOrder(ShoppingCartDTO shoppingCartDTO, OrderDateTime orderDateTime) {
 
         User customer = userRepository.findUserById(shoppingCartDTO.getUserId());
         userRoleCheck(shoppingCartDTO.getUserId());
 
-        OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
+        OrderResultDTO orderResultDTO = new OrderResultDTO();
         List<Menu> menuList = shoppingCartDTO.getShoppingCart().getMenu();
         Order order = new Order();
         OrderHistory orderHistory = customer.getOrderHistory();
@@ -73,12 +73,12 @@ public class OrderService {
         userRepository.save(customer);
 
         // 반환할 객체의 정보 setting
-        orderResponseDTO.setCustomerName(customer.getName());
-        orderResponseDTO.setCustomerAddress(customer.getAddress());
-        orderResponseDTO.setOrderDateAndTime(orderDateTime.getDateTime());
-        orderResponseDTO.setTotalPrice(totalPrice);
+        orderResultDTO.setCustomerName(customer.getName());
+        orderResultDTO.setCustomerAddress(customer.getAddress());
+        orderResultDTO.setOrderDateAndTime(orderDateTime.getDateTime());
+        orderResultDTO.setTotalPrice(totalPrice);
 
-        return orderResponseDTO;
+        return orderResultDTO;
     }
 
     // 주문한 내역에서 메뉴의 옵션 수정
@@ -110,7 +110,19 @@ public class OrderService {
                 menuList.remove(menu1);
             }
         }
-        menu.setOptions(changeOptionsDTO.getNewOptions());
+        List<Options> newOptions = new ArrayList<>();
+
+        for (OptionsDTO optionsDTO : changeOptionsDTO.getNewOptions()) {
+            Options option = new Options();
+            option.setOption_nm(optionsDTO.getOption_nm());
+            option.setOption_pic(optionsDTO.getOption_pic());
+            option.setQuantity(option.getQuantity());
+            option.setPrice(option.getPrice());
+
+            newOptions.add(option);
+        }
+
+        menu.setOptions(newOptions);
 
         // 수정사항 저장
         order.getMenu().add(0, menu);
@@ -150,7 +162,14 @@ public class OrderService {
                 menuList.remove(menu1);
             }
         }
-        menu.setStyle(changeStyleDTO.getNewStyle());
+
+        Style style = new Style();
+        style.setStyle_nm(changeStyleDTO.getNewStyle().getStyle_nm());
+        style.setStyle_pic(changeStyleDTO.getNewStyle().getStyle_pic());
+        style.setStyle_config(changeStyleDTO.getNewStyle().getStyle_config());
+        style.setPrice(changeStyleDTO.getNewStyle().getPrice());
+
+        menu.setStyle(style);
 
         // 수정사항 저장
         order.getMenu().add(0, menu);
@@ -192,16 +211,16 @@ public class OrderService {
     }
 
     // 고객의 주문 내역 보여주기
-    public List<Menu> showOrderHistory(UserIdDTO userIdDTO) {
+    public List<MenuDTO> showOrderHistory(UserIdDTO userIdDTO) {
 
         User customer = userRepository.findUserById(userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
 
         OrderHistory orderHistory = customer.getOrderHistory();
 
-        List<Menu> result = new ArrayList<>();
+        List<MenuDTO> result = new ArrayList<>();
         for (Order order : orderHistory.getOrder()) {
-            result.addAll(order.getMenu());
+            //result.addAll(order.getMenu().stream().map(MenuDTO::from).collect(Collectors.toList()));
         }
         return result;
     }
@@ -218,11 +237,11 @@ public class OrderService {
         orderHistoryRepository.save(orderHistory);
     }
 
-    public List<MenuItem> showAllMenus() {
-        return menuItemRepository.findAll();
+    public List<MenuItemDTO> showAllMenus() {
+        return menuItemRepository.findAll().stream().map(MenuItemDTO::from).collect(Collectors.toList());
     }
 
-    public List<OptionsItem> showAllOptions(Long menuId) {
+    public List<OptionsDTO> showAllOptions(Long menuId) {
         List<OptionsItem> array = optionsItemRepository.findAll();
         List<OptionsItem> optionsList = new ArrayList<>();
 
@@ -233,24 +252,24 @@ public class OrderService {
             }
         }
 
-        return optionsList;
+        return optionsList.stream().map(OptionsDTO::from).collect(Collectors.toList());
     }
 
-    public List<StyleItem> showAllStyles(Long menuId) {
+    public List<StyleDTO> showAllStyles(Long menuId) {
         List<StyleItem> styleList = styleItemRepository.findAll();
 
         // 샴페인 축제 디너의 경우, 심플 디너 스타일을 제공하지 않음!
-        if(menuId.equals(4L)) {
+        if (menuId.equals(4L)) {
             styleList.remove(0);
         }
 
-        return styleList;
+        return styleList.stream().map(StyleDTO::from).collect(Collectors.toList());
     }
 
     public void userRoleCheck(Long userId) {
         User user = userRepository.findUserById(userId);
 
-        if (!user.getRole().equals(Role.ADMINISTRATOR)) {
+        if (user.getRole().equals(Role.ADMINISTRATOR)) {
             throw new AccessDeniedException("일반 회원이 사용하실 수 있는 기능입니다.");
         }
     }

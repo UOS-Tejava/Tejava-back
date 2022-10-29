@@ -1,13 +1,13 @@
 package com.sogong.tejava.service;
 
 import com.sogong.tejava.dto.RegisterDTO;
+import com.sogong.tejava.dto.UserDTO;
+import com.sogong.tejava.entity.Order;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.OrderHistory;
 import com.sogong.tejava.entity.customer.ShoppingCart;
 import com.sogong.tejava.entity.customer.User;
-import com.sogong.tejava.repository.OrderHistoryRepository;
-import com.sogong.tejava.repository.ShoppingCartRepository;
-import com.sogong.tejava.repository.UserRepository;
+import com.sogong.tejava.repository.*;
 import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +28,31 @@ import java.util.Objects;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ShoppingCartRepository shoppingCartRepository;
 
     private final OrderHistoryRepository orderHistoryRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final OrderRepository orderRepository;
+
+    // 회원을 위한 장바구니 테이블 생성
+    public void createCartTb(User user) {
+        ShoppingCart shoppingCart = ShoppingCart.createCart(user);
+        user.setShoppingCart(shoppingCart);
+        shoppingCartRepository.save(shoppingCart);
+    }
+
+    // 회원을 위한 주문테이블 생성
+    public void createOrderTb(User user) {
+        Order order = Order.createOrder(user);
+        orderRepository.save(order);
+    }
+
+    // 회원을 위한 주문 내역 테이블 생성
+    public void createOrderHistoryTb(User user) {
+
+        OrderHistory orderHistory = OrderHistory.createOrderHistory(user);
+        user.setOrderHistory(orderHistory);
+        orderHistoryRepository.save(orderHistory);
+    }
 
     // 회원 등록
     public void registerUser(RegisterDTO registerDTO) {
@@ -53,30 +75,21 @@ public class UserService {
         // TODO: 연락처 인증 관련해서도 나중에 괜찮다면 작성해볼 것!
         user.setPhone_check(registerDTO.getPhoneCheck());
         user.setAgreement(registerDTO.getAgreement());
+        userRepository.save(user);
 
-        // 회원을 위한 장바구니 생성
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setUser(user);
-        shoppingCart.setTotal_price(0.0);
-        shoppingCart.setMenu(null);
-
-        // 회원을 위한 주문 내역 테이블 생성
-        OrderHistory orderHistory = new OrderHistory();
-        orderHistory.setOrder(null);
-        orderHistory.setUser(user);
-        user.setOrderHistory(orderHistory);
+        createCartTb(user);
+        createOrderHistoryTb(user);
+        createOrderTb(user);
 
         // DB에 저장
         userRepository.save(user);
-        orderHistoryRepository.save(orderHistory);
-        shoppingCartRepository.save(shoppingCart);
     }
 
     public boolean checkUidDuplicate(String uid) {
         return userRepository.existsByUid(uid);
     }
 
-    public User home(HttpServletRequest request) {
+    public UserDTO home(HttpServletRequest request) {
         // 세션을 가져와 회원을 반환합니다. 반환된 회원이 없다면 비회원을 생성하여 반환
 
         HttpSession currentSession = request.getSession(false);
@@ -103,15 +116,14 @@ public class UserService {
 
             // 비회원 db에 저장
             userRepository.save(notMember);
-            shoppingCartRepository.save(shoppingCart);
 
-            return notMember;
+            return null;
         }
 
-        return (User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER);
+        return UserDTO.from((User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER));
     }
 
-    public User login(String uid, String password, Boolean staySignedIn) { // TODO: 프론트 단에서 하는 게 맞는 지 -> bool 값은 사용할 게 없음
+    public UserDTO login(String uid, String password, Boolean staySignedIn) { // TODO: 프론트 단에서 하는 게 맞는 지 -> bool 값은 사용할 게 없음
         //TODO: 로그인 시, 관리자의 계정인 경우, 직원 인터페이스 화면으로 이동할 수 있게끔 할 것
 
         User loginMember = userRepository.findUserByUid(uid);
@@ -153,6 +165,6 @@ public class UserService {
         log.info("기존의 세션 반환 및 혹은 세션을 생성하였습니다.");
         log.info("해당 세션 : " + session);
 
-        return loginMember;
+        return UserDTO.from(loginMember);
     }
 }

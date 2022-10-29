@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class ShoppingCartDTO {
 
     private Long userId;
-    private ShoppingCart shoppingCart;
+    private ShoppingCart shoppingCart; // TODO: 수정 필요 -> 주문 관련해서 코드 수정 시, 변경 예정
 }

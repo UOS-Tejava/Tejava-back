@@ -165,7 +165,7 @@ public class CartService {
     }
 
     // 카트의 메뉴 아이템 하나 삭제하기
-    public void deleteOne(CancelMenuFromCartDTO cancelMenuFromCartDTO) { // TODO : MenuId 구별 확인할 것
+    public void deleteOne(CancelMenuFromCartDTO cancelMenuFromCartDTO) {
 
         User customer = userRepository.findUserById(cancelMenuFromCartDTO.getUserId());
         userRoleCheck(cancelMenuFromCartDTO.getUserId());

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StockRepository extends JpaRepository<StockItem, Long> {
+    StockItem getById(Long stockItemId);
 }

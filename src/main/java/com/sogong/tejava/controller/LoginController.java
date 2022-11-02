@@ -2,7 +2,6 @@ package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.LoginDTO;
 import com.sogong.tejava.dto.UserDTO;
-import com.sogong.tejava.service.CartService;
 import com.sogong.tejava.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;

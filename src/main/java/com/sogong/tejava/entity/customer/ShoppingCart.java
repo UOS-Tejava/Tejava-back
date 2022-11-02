@@ -26,7 +26,7 @@ public class ShoppingCart extends BaseTimeEntity {
     private List<Menu> menu = new ArrayList<>();
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User user;
 
     public static ShoppingCart createCart(User user) {

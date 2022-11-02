@@ -31,6 +31,9 @@ public class RegisterDTO { // 회원가입 폼
     @NotBlank(message = "주소를 입력해주세요.")
     private String address;
 
-    private Boolean phoneCheck;  // TODO: coolSMS로 인증 절차를 거칠 예정 -> 개발 후순위
-    private Boolean agreement; // 개인정보(성명, 주소) 수집 이용 동의
+    private Boolean phoneCheck;
+    private Boolean agreement = true; // 개인정보(성명, 주소) 수집 이용 동의(default : true)
+    private Boolean RegisterAsAdmin = false; // 관리자로 회원가입하기(default : user)
+
+    private String adminVerificationCode; // tejava
 }

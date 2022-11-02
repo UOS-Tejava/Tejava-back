@@ -1,7 +1,6 @@
 package com.sogong.tejava.dto;
 
 import com.sogong.tejava.entity.Order;
-import com.sogong.tejava.entity.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

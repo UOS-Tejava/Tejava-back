@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     // 주문하기 : 결제 정보는 프론트에서만 다루고 db에 따로 저장하진 않는 것으로 결정
-    @PostMapping("/order/placeOrder")
+    @PostMapping("/order/placeOrder") // TODO : 심플 스타일을 선택하는 경우, 와인이 포함되어 있다면 플라스틱 와인잔이 제공됨을 명시해야 한다 !
     @ApiOperation(value = "주문하기", notes = "회원의 주문 내역과 직원 인터페이스 화면의 주문 목록에도 추가되며, 주문 횟수가 1 늘어납니다.")
     public ResponseEntity<OrderResultDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
 

@@ -1,9 +1,6 @@
 package com.sogong.tejava.service;
 
-import com.sogong.tejava.dto.ChangeOrderStatusDTO;
-import com.sogong.tejava.dto.UserIdDTO;
-import com.sogong.tejava.dto.OrderDTO;
-import com.sogong.tejava.dto.StockItemDTO;
+import com.sogong.tejava.dto.*;
 import com.sogong.tejava.entity.Order;
 import com.sogong.tejava.entity.OrderStatus;
 import com.sogong.tejava.entity.Role;
@@ -29,8 +26,9 @@ public class EmployeeService {
     1. 들어온 주문 조회
     2. 주문의 상태 변경하기(pending, cooking, delivering, completed)
     3. 재고 현황 보여주기
-    (4. 현재 세션에 있는 유저의 권한과 파라미터로 받은 유저의 권한이 동일한 지 확인하기)
-    (5. 관리자 권한이 있는 지 확인하기)
+    4. 재고 수량 수정하기
+    (5. 현재 세션에 있는 유저의 권한과 파라미터로 받은 유저의 권한이 동일한 지 확인하기)
+    (6. 관리자 권한이 있는 지 확인하기)
      */
 
     private final StockRepository stockRepository;
@@ -128,6 +126,16 @@ public class EmployeeService {
         userRoleCheck(userIdDTO.getUserId());
 
         return stockRepository.findAll().stream().map(StockItemDTO::from).collect(Collectors.toList());
+    }
+
+    // 재고 수량 수정하기
+    public void changeStockInfo(HttpServletRequest request, ChangeStockInfoDTO changeStockInfoDTO) {
+
+        requestCheck(request, changeStockInfoDTO.getUserId());
+        userRoleCheck(changeStockInfoDTO.getUserId());
+
+        StockItem stockItem = stockRepository.getById(changeStockInfoDTO.getStockItemId());
+        stockItem.setQuantity(changeStockInfoDTO.getQuantity());
     }
 
     // 일반 유저가 직원의 id 알아서 악의적으로 요청하는 경우를 체크

@@ -17,15 +17,6 @@ public class StyleDTO {
     private String style_pic;
     private int price;
 
-    public static StyleDTO from(Style style){
-        return StyleDTO.builder()
-                .style_nm(style.getStyle_nm())
-                .style_config(style.getStyle_config())
-                .style_pic(style.getStyle_pic())
-                .price(style.getPrice())
-                .build();
-    }
-
     public static StyleDTO from(Menu menu){
         return StyleDTO.builder()
                 .style_nm(menu.getStyle().getStyle_nm())

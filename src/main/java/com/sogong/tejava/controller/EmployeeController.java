@@ -1,9 +1,6 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.ChangeOrderStatusDTO;
-import com.sogong.tejava.dto.UserIdDTO;
-import com.sogong.tejava.dto.OrderDTO;
-import com.sogong.tejava.dto.StockItemDTO;
+import com.sogong.tejava.dto.*;
 import com.sogong.tejava.service.EmployeeService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +43,14 @@ public class EmployeeController {
 
         List<StockItemDTO> stockItemList = employeeService.showStockInfo(request, userIdDTO);
         return ResponseEntity.ok().body(stockItemList);
+    }
+
+    // 재고 수량 수정하기
+    @PatchMapping("employee/stock-info")
+    @ApiOperation(value = "재고 수량 수정하기", notes = "요청자의 id, 재고의 id, 그리고 수량을 입력받아 갱신합니다.")
+    public ResponseEntity<?> changeStockInfo(HttpServletRequest request, @RequestBody ChangeStockInfoDTO changeStockInfoDTO) {
+
+        employeeService.changeStockInfo(request, changeStockInfoDTO);
+        return ResponseEntity.ok().build();
     }
 }

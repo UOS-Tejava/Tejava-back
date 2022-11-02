@@ -58,6 +58,7 @@ public class CartService {
         List<Options> options = new ArrayList<>();
         Menu menu = new Menu();
 
+        // 스타일과 옵션 제외하고 세팅
         menu.setMenu_nm(addToCartDTO.getMenu().getMenu_nm());
         menu.setMenu_pic(addToCartDTO.getMenu().getMenu_pic());
         menu.setMenu_config(addToCartDTO.getMenu().getMenu_config());
@@ -66,7 +67,7 @@ public class CartService {
         menu.setShoppingCart(shoppingCart);
         menuRepository.save(menu);
 
-
+        // 스타일 세팅
         style.setStyle_nm(addToCartDTO.getMenu().getStyle().getStyle_nm());
         style.setStyle_config((addToCartDTO.getMenu().getStyle().getStyle_config()));
         style.setStyle_pic(addToCartDTO.getMenu().getStyle().getStyle_pic());
@@ -74,6 +75,7 @@ public class CartService {
         style.setMenu(menu);
         styleRepository.save(style);
 
+        // 옵션 세팅
         for (OptionsDTO option : addToCartDTO.getMenu().getOptions()) {
             Options options1 = new Options();
             options1.setOption_nm(option.getOption_nm());
@@ -86,10 +88,22 @@ public class CartService {
         }
         optionsRepository.saveAll(options);
 
+        // 메뉴에 스타일과 옵션 세팅
+
         menu.setStyle(style);
         menu.setOptions(options);
 
-        menuRepository.save(menu);
+        // 담긴 메뉴들 중 옵션과 스타일 모두 동일한 경우에 추가했던 메뉴의 수량만 1 늘림
+        for (Menu item : menuRepository.findAllByShoppingCartId(shoppingCart.getId())) { // TODO : 여길 수정할 것 ! 조건문이 잘못됨! item 과 메뉴는 동일하기 때문에 temp 만드는 게 맞을 듯!
+            if (menu.getMenu_nm().equals(item.getMenu_nm()) && menu.getStyle().getId().equals(item.getStyle().getId()) && menu.getOptions().equals(item.getOptions())) {
+
+                menuRepository.deleteById(menu.getId());
+                item.setQuantity(item.getQuantity() + 1);
+                menuRepository.save(item);
+            }
+        }
+
+        // 카트에도 메뉴 추가 후 db에 갱신
         shoppingCart.getMenu().add(0, menu);
         log.info(shoppingCart.getMenu().toString()); // 추가된 것 확인
 

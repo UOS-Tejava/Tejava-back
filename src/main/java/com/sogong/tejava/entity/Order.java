@@ -23,8 +23,7 @@ public class Order extends BaseTimeEntity {
     private Long id;
 
     private double total_price;
-    private OrderStatus order_status;
-    private String option_to_string;
+    private String order_status;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,8 +40,7 @@ public class Order extends BaseTimeEntity {
         order.setOrderHistory(user.getOrderHistory());
         order.setMenu(null);
         order.setTotal_price(0.0);
-        order.setOption_to_string("");
-        order.setOrder_status(null);
+        order.setOrder_status("");
 
         return order;
     }

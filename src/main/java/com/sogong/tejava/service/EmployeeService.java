@@ -68,7 +68,7 @@ public class EmployeeService {
         order.setOrder_status(changeOrderStatusDTO.getOrderStatus());
 
         // 배달완료로 상태가 바뀌는 경우, 재고 현황에 반영할 것
-        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
+        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed.toString())) {
             StockItem wine = stockRepository.findAll().get(0); // TODO: 수정할 것
             StockItem coffee = stockRepository.findAll().get(2);
             StockItem cheese = stockRepository.findAll().get(4);

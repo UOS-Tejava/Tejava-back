@@ -106,10 +106,7 @@ public class CartService {
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
 
-        // 수정될 메뉴를 삭제한 후, 새로운 옵션/스타일이 적용된 메뉴를 카트에 담는다
-        List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
-        log.info("수정될 메뉴 후보 : " + menuList);
-
+        // 새로운 옵션/스타일이 적용된 메뉴를 카트에 담는다
         Menu menuTmp = menuRepository.getMenuById(changeMenuDetailDTO.getMenuId());
         log.info("수정할 메뉴 : " + menuTmp);
 
@@ -138,7 +135,6 @@ public class CartService {
             newOptions.add(option);
         }
 
-        optionsRepository.deleteAllByMenuId(menuTmp.getId());
         optionsRepository.saveAll(newOptions);
 
         // 새로운 스타일 생성
@@ -156,11 +152,11 @@ public class CartService {
 
         // 카트에 수정된 메뉴 추가
         shoppingCart.getMenu().add(0, menu);
+        shoppingCart.setMenu(menuRepository.findAllByShoppingCartId(shoppingCart.getId()));
 
         // db에 갱신
         menuRepository.save(menu);
         menuRepository.delete(menuTmp);
-        shoppingCart.setMenu(menuRepository.findAllByShoppingCartId(shoppingCart.getId()));
         shoppingCartRepository.save(shoppingCart);
     }
 

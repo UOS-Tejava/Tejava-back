@@ -12,6 +12,6 @@ public class OrderResultDTO {
 
     private String customerName;
     private String customerAddress;
-    private String orderDateAndTime;
+    private String orderDateTime;
     private double totalPrice;
 }

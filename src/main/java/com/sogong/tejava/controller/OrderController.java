@@ -2,7 +2,6 @@ package com.sogong.tejava.controller;
 
 import com.sogong.tejava.dto.*;
 import com.sogong.tejava.service.OrderService;
-import com.sogong.tejava.util.OrderDateTime;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,26 +18,17 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 메뉴의 옵션 수정하기
-    @PatchMapping("/order/update/menu-options")
-    @ApiOperation(value = "주문 이후에 메뉴의 옵션 수정", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능합니다.")
-    public ResponseEntity<?> updateMenuOptions(@RequestBody ChangeOptionsDTO changeOptionsDTO) {
+    // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 메뉴 아이템의 옵션/스타일(menu detail) 수정하기
+    @PatchMapping("/order/update/menu-detail")
+    @ApiOperation(value = "주문 이후에 메뉴의 옵션/스타일 수정", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능합니다.")
+    public ResponseEntity<?> updateMenuOptions(@RequestBody ChangeMenuDetailDTO changeMenuDetailDTO) {
 
-        orderService.updateMenuOptions(changeOptionsDTO);
-        return ResponseEntity.ok().build();
-    }
-
-    // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 메뉴의 스타일 수정하기
-    @PatchMapping("/order/update/menu-style")
-    @ApiOperation(value = "주문 이후에 메뉴의 스타일 수정", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능합니다.")
-    public ResponseEntity<?> updateMenuStyle(@RequestBody ChangeStyleDTO changeStyleDTO) {
-
-        orderService.updateMenuStyle(changeStyleDTO);
+        orderService.updateMenuDetail(changeMenuDetailDTO);
         return ResponseEntity.ok().build();
     }
 
     // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 결제 취소하기 -> 주문내역에서도 삭제!
-    @DeleteMapping("/order/delete/{orderId}")
+    @DeleteMapping("/order/cancel")
     @ApiOperation(value = "주문 이후에 결제 취소하기", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능하며, 주문 횟수가 1 줄어듭니다.")
     public ResponseEntity<?> cancelOrder(@RequestBody CancelOrderDTO cancelOrderDTO) {
 
@@ -49,9 +39,9 @@ public class OrderController {
     // 주문하기 : 결제 정보는 프론트에서만 다루고 db에 따로 저장하진 않는 것으로 결정
     @PostMapping("/order/placeOrder")
     @ApiOperation(value = "주문하기", notes = "회원의 주문 내역과 직원 인터페이스 화면의 주문 목록에도 추가되며, 주문 횟수가 1 늘어납니다.")
-    public ResponseEntity<OrderResultDTO> placeOrder(@RequestBody ShoppingCartDTO shoppingCartDTO, @RequestBody OrderDateTime orderDateTime) {
+    public ResponseEntity<OrderResultDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
 
-        OrderResultDTO orderResultDTO = orderService.placeOrder(shoppingCartDTO, orderDateTime);
+        OrderResultDTO orderResultDTO = orderService.placeOrder(orderDTO);
         return ResponseEntity.ok().body(orderResultDTO);
     }
 

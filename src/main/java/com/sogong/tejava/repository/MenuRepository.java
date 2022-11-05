@@ -10,8 +10,10 @@ import java.util.List;
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     Menu getMenuById(Long menuId);
+
     List<Menu> findAllByShoppingCartId(Long shoppingCartId);
+
     void deleteAllByShoppingCartId(Long shoppingCartId);
+
     List<Menu> findAllByOrderId(Long orderId);
-    Menu findMenuByIdLessThan(Long menuId);
 }

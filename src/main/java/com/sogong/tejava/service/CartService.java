@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class CartService {
     3. 카트에 담겨 있는 아이템의 옵션/스타일 수정
     4. 카트에 담긴 거 아이템 한 개 삭제
     (5. 유저 권한인 지 체크하기)
+    (6. 메뉴가 기존 메뉴와 동일(옵션/스타일)한 지 체크하기)
      */
 
     // 카트에 담긴 메뉴 보여주기
@@ -89,18 +91,22 @@ public class CartService {
         optionsRepository.saveAll(options);
 
         // 메뉴에 스타일과 옵션 세팅
-
         menu.setStyle(style);
         menu.setOptions(options);
+        menuRepository.save(menu);
 
-        // 담긴 메뉴들 중 옵션과 스타일 모두 동일한 경우에 추가했던 메뉴의 수량만 1 늘림
-        for (Menu item : menuRepository.findAllByShoppingCartId(shoppingCart.getId())) { // TODO : 여길 수정할 것 ! 조건문이 잘못됨! item 과 메뉴는 동일하기 때문에 temp 만드는 게 맞을 듯!
-            if (menu.getMenu_nm().equals(item.getMenu_nm()) && menu.getStyle().getId().equals(item.getStyle().getId()) && menu.getOptions().equals(item.getOptions())) {
+        List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
+        menuList.sort(Comparator.comparingInt(a -> a.getId().intValue()));
 
-                menuRepository.deleteById(menu.getId());
-                item.setQuantity(item.getQuantity() + 1);
-                menuRepository.save(item);
-            }
+        log.info("모든 메뉴 리스트 : " + menuList);
+
+        if (menuDuplicateCheck(menu, menuList)) { // 중복된 메뉴가 있다면
+
+            // menu 는 생성되면 AI 하는 id를 갖기에 겹치는 메뉴는 무조건 기존 메뉴의 id 보다 큰 값을 가짐
+            Menu menu1 = menuRepository.findMenuByIdLessThan(menu.getId()); // 기존 메뉴를 찾은 이후
+            menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
+            menuRepository.save(menu1); // db에 갱신
+            menuRepository.delete(menu); // 추가했던 중복된 메뉴는 삭제
         }
 
         // 카트에도 메뉴 추가 후 db에 갱신
@@ -172,9 +178,23 @@ public class CartService {
         menuRepository.save(menu);
         menuRepository.delete(menuTmp);
         shoppingCartRepository.save(shoppingCart);
+
+
+        // 메뉴 중복 체크
+        List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
+        menuList.sort(Comparator.comparingInt(a -> a.getId().intValue()));
+
+        if (menuDuplicateCheck(menu, menuList)) {
+            // menu 는 생성되면 AI 하는 id를 갖기에 겹치는 메뉴는 무조건 기존 메뉴의 id 보다 큰 값을 가짐
+            Menu menu1 = menuRepository.findMenuByIdLessThan(menu.getId()); // 기존 메뉴를 찾은 이후
+            menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
+            menuRepository.save(menu1); // db에 갱신
+            menuRepository.delete(menu); // 추가했던 중복된 메뉴는 삭제
+        }
     }
 
     // 카트의 메뉴 아이템 하나 삭제하기
+    @Transactional
     public void deleteOne(CancelMenuFromCartDTO cancelMenuFromCartDTO) {
 
         User customer = userRepository.findUserById(cancelMenuFromCartDTO.getUserId());
@@ -195,5 +215,38 @@ public class CartService {
         if (user.getRole().equals(Role.ADMINISTRATOR)) {
             throw new AccessDeniedException("일반 회원이 사용하실 수 있는 기능입니다.");
         }
+    }
+
+    // menuList 안에 menu 와 동일한 메뉴가 있는 지 확인하기
+    public boolean menuDuplicateCheck(Menu menu, List<Menu> menuList) {
+
+        for (Menu item : menuList) {
+            if (menu.getMenu_nm().equals(item.getMenu_nm())) { // 같은 메뉴를 추가한다면, 스타일과 옵션이 모두 일치하는 지 체크해서 같다면 수량만 수정해야함!
+
+                List<Options> item_optionList = item.getOptions();
+                item_optionList.sort(Comparator.comparingInt(a -> a.getId().intValue()));
+
+                List<Options> menu_optionList = menu.getOptions();
+                menu_optionList.sort(Comparator.comparingInt(a -> a.getId().intValue()));
+
+                Style item_style = item.getStyle();
+                Style menu_style = item.getStyle();
+
+                if (item_optionList.size() == menu_optionList.size()) {
+                    for (int i = 0; i < item_optionList.size(); i++) { // 옵션의 수량이 일치하지 않으면 동일한 메뉴가 아님
+                        if (item_optionList.get(i).getQuantity() != menu_optionList.get(i).getQuantity()) {
+                            return true;
+                        }
+                    }
+                } else // 옵션의 개수가 달라도 동일한 메뉴가 아님
+                    return true;
+
+                if (!item_style.getStyle_nm().equals(menu_style.getStyle_nm())) { // 메뉴의 스타일이 서로 다르면 동일한 메뉴가 아님
+                    return true;
+                }
+
+            }
+        }
+        return false;
     }
 }

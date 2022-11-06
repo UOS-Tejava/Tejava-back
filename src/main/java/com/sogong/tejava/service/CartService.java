@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -232,7 +231,7 @@ public class CartService {
                     }
                 }
 
-                if(result) {
+                if (result) {
                     return item;
                 }
             }

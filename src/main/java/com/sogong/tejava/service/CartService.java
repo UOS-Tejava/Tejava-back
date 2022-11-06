@@ -92,24 +92,25 @@ public class CartService {
         menu.setOptions(options);
 
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
-        menuList.sort(Comparator.comparingInt(a -> a.getId().intValue()));
 
         log.info("모든 메뉴 리스트 : " + menuList);
 
-        if (findMenuDuplicate(menu, menuList) != null) {
+        if (findMenuDuplicate(menu, menuList) != null) { // 중복되는 메뉴라면
 
             if (menuList.size() > 1) {
                 Menu menu1 = findMenuDuplicate(menu, menuList); // 기존 메뉴를 찾은 이후
                 menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
-                menuRepository.save(menu1); // db에 갱신
+                menuRepository.save(menu1); // db에 갱신하고
+                menuRepository.delete(menu); // 추가했던 메뉴는 다시 삭제
+                shoppingCart.setMenu(menuRepository.findAll()); // 수량만 바뀐 메뉴를 장바구니에 반영
             }
-        } else {
+        } else { // 중복된 메뉴가 아니라면 그대로 저장
             menuRepository.save(menu);
             shoppingCart.getMenu().add(menu);
         }
 
         // 카트에도 메뉴 추가 후 db에 갱신
-        shoppingCartRepository.save(shoppingCart);
+        shoppingCartRepository.saveAndFlush(shoppingCart);
     }
 
     @Transactional
@@ -120,7 +121,6 @@ public class CartService {
         userRoleCheck(changeMenuDetailDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
-
 
         // 새로운 옵션/스타일이 적용된 메뉴를 카트에 담는다
         Menu menuTmp = menuRepository.getMenuById(changeMenuDetailDTO.getMenuId());
@@ -133,7 +133,6 @@ public class CartService {
         menu.setShoppingCart(menuTmp.getShoppingCart());
         menu.setQuantity(menuTmp.getQuantity());
         menu.setPrice(menuTmp.getPrice());
-        menu.setOrder(menuTmp.getOrder());
 
         menuRepository.save(menu);
 
@@ -149,9 +148,8 @@ public class CartService {
             option.setMenu(menu);
 
             newOptions.add(option);
+            optionsRepository.save(option);
         }
-
-        optionsRepository.saveAll(newOptions);
 
         // 새로운 스타일 생성
         Style style = new Style();
@@ -167,7 +165,7 @@ public class CartService {
         menu.setStyle(style);
 
         // 카트에 수정된 메뉴 추가
-        shoppingCart.getMenu().add(0, menu);
+        shoppingCart.getMenu().add(menu);
         shoppingCart.setMenu(menuRepository.findAllByShoppingCartId(shoppingCart.getId()));
 
         // db에 갱신
@@ -176,15 +174,27 @@ public class CartService {
         shoppingCartRepository.save(shoppingCart);
 
 
-        // 메뉴 중복 체크
+        // 중복 체크
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
-        menuList.sort(Comparator.comparingInt(a -> a.getId().intValue()));
 
-        if (findMenuDuplicate(menu, menuList) != null) {
-            Menu menu1 = findMenuDuplicate(menu, menuList); // 기존 메뉴를 찾은 이후
-            menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
-            menuRepository.save(menu1); // db에 갱신
+        log.info("모든 메뉴 리스트 : " + menuList);
+
+        if (findMenuDuplicate(menu, menuList) != null) { // 중복되는 메뉴라면
+
+            if (menuList.size() > 1) {
+                Menu menu1 = findMenuDuplicate(menu, menuList); // 기존 메뉴를 찾은 이후
+                menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
+                menuRepository.save(menu1); // db에 갱신하고
+                menuRepository.delete(menu); // 추가했던 메뉴는 다시 삭제
+                shoppingCart.setMenu(menuRepository.findAll()); // 수량만 바뀐 메뉴를 장바구니에 반영
+            }
+        } else { // 중복된 메뉴가 아니라면 그대로 저장
+            menuRepository.save(menu);
+            shoppingCart.getMenu().add(menu);
         }
+
+        // 카트에도 메뉴 추가 후 db에 갱신
+        shoppingCartRepository.saveAndFlush(shoppingCart);
     }
 
     // 카트의 메뉴 아이템 하나 삭제하기
@@ -211,11 +221,11 @@ public class CartService {
         }
     }
 
-    // menuList 안에 menu 와 동일한 메뉴가 있는 지 확인하고 중복되는 게 있다면 추가된 메뉴는 삭제하고 기존 메뉴를 반환
-    public Menu findMenuDuplicate(Menu menu, List<Menu> menuList) {
+    // menuList 안에 menu 와 동일한 메뉴가 있는 지 확인하고 중복되는 게 있다면 기존 메뉴를 반환
+    public Menu findMenuDuplicate(Menu menu, List<Menu> menuList) { // addToCart 로직에선 menu 가 이미 db에 저장되어 있기 때문에 menu 를 제외하고 동일한 메뉴가 있는 지 파악해야 함
 
         for (Menu item : menuList) {
-            if (!menu.getId().equals(item.getId()) && menu.getMenu_nm().equals(item.getMenu_nm())) { // 같은 메뉴를 추가한다면, 스타일과 옵션이 모두 일치하는 지 체크해서 같다면 수량만 수정해야함!
+            if (!menu.getId().equals(item.getId()) && menu.getMenu_nm().equals(item.getMenu_nm())) { // 같은 메뉴를 추가하는 경우
 
                 List<Options> item_optionList = item.getOptions();
                 List<Options> menu_optionList = menu.getOptions();
@@ -223,15 +233,23 @@ public class CartService {
                 Style item_style = item.getStyle();
                 Style menu_style = item.getStyle();
 
+                boolean result = true;
+                boolean sameMenu;
                 if (item_optionList.size() == menu_optionList.size()) {
                     for (Options item_option : item_optionList) { // 추가적인 조건 : 옵션 이름,수량 그리고 스타일을 이름이 동일하면 동일한 메뉴
+                        sameMenu = false;
                         for (Options menu_option : menu_optionList) {
                             if (item_option.getOption_nm().equals(menu_option.getOption_nm()) && item_option.getQuantity() == menu_option.getQuantity() && item_style.getStyle_nm().equals(menu_style.getStyle_nm())) {
-                                menuRepository.delete(menu);
-                                return item;
+                                sameMenu = true;
+                                break;
                             }
                         }
+                        result &= sameMenu;
                     }
+                }
+
+                if(result) {
+                    return item;
                 }
             }
         }

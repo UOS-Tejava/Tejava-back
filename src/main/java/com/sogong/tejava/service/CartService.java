@@ -99,7 +99,7 @@ public class CartService {
 
             if (menuList.size() > 1) {
                 Menu menu1 = findMenuDuplicate(menu, menuList); // 기존 메뉴를 찾은 이후
-                menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
+                menu1.setQuantity(menu1.getQuantity() + menu.getQuantity()); // 기존 메뉴의 수량을 추가하려했던 메뉴의 수량만큼 올리고
                 menuRepository.save(menu1); // db에 갱신하고
                 menuRepository.delete(menu); // 추가했던 메뉴는 다시 삭제
                 shoppingCart.setMenu(menuRepository.findAll()); // 수량만 바뀐 메뉴를 장바구니에 반영
@@ -110,7 +110,7 @@ public class CartService {
         }
 
         // 카트에도 메뉴 추가 후 db에 갱신
-        shoppingCartRepository.saveAndFlush(shoppingCart);
+        shoppingCartRepository.save(shoppingCart);
     }
 
     @Transactional
@@ -122,19 +122,13 @@ public class CartService {
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
-        // 새로운 옵션/스타일이 적용된 메뉴를 카트에 담는다
-        Menu menuTmp = menuRepository.getMenuById(changeMenuDetailDTO.getMenuId());
-        log.info("수정할 메뉴 : " + menuTmp);
-
-        Menu menu = new Menu();
-        menu.setMenu_nm(menuTmp.getMenu_nm());
-        menu.setMenu_config(menuTmp.getMenu_config());
-        menu.setMenu_pic(menuTmp.getMenu_pic());
-        menu.setShoppingCart(menuTmp.getShoppingCart());
-        menu.setQuantity(menuTmp.getQuantity());
-        menu.setPrice(menuTmp.getPrice());
-
+        // 수정될 메뉴를 가져와 옵션/스타일 초기화
+        Menu menu = menuRepository.getMenuById(changeMenuDetailDTO.getMenuId()); // 수정할 메뉴를 가져옴
+        optionsRepository.deleteAllByMenuId(menu.getId());
+        styleRepository.deleteByMenuId(menu.getId());
         menuRepository.save(menu);
+
+        log.info("수정할 메뉴 : " + menu);
 
         // 새로운 옵션 리스트 생성
         List<Options> newOptions = new ArrayList<>();
@@ -148,8 +142,8 @@ public class CartService {
             option.setMenu(menu);
 
             newOptions.add(option);
-            optionsRepository.save(option);
         }
+        optionsRepository.saveAll(newOptions);
 
         // 새로운 스타일 생성
         Style style = new Style();
@@ -164,16 +158,6 @@ public class CartService {
         menu.setOptions(newOptions);
         menu.setStyle(style);
 
-        // 카트에 수정된 메뉴 추가
-        shoppingCart.getMenu().add(menu);
-        shoppingCart.setMenu(menuRepository.findAllByShoppingCartId(shoppingCart.getId()));
-
-        // db에 갱신
-        menuRepository.save(menu);
-        menuRepository.delete(menuTmp);
-        shoppingCartRepository.save(shoppingCart);
-
-
         // 중복 체크
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
 
@@ -183,14 +167,14 @@ public class CartService {
 
             if (menuList.size() > 1) {
                 Menu menu1 = findMenuDuplicate(menu, menuList); // 기존 메뉴를 찾은 이후
-                menu1.setQuantity(menu1.getQuantity() + 1); // 기존 메뉴의 수량을 1 올리고
+                menu1.setQuantity(menu1.getQuantity() + menu.getQuantity()); // 기존 메뉴의 수량을 수정한 메뉴의 수량만큼 올리고
                 menuRepository.save(menu1); // db에 갱신하고
-                menuRepository.delete(menu); // 추가했던 메뉴는 다시 삭제
+                menuRepository.delete(menu);
                 shoppingCart.setMenu(menuRepository.findAll()); // 수량만 바뀐 메뉴를 장바구니에 반영
             }
-        } else { // 중복된 메뉴가 아니라면 그대로 저장
+        } else { // 중복되는 메뉴가 없다면
             menuRepository.save(menu);
-            shoppingCart.getMenu().add(menu);
+            shoppingCart.setMenu(menuRepository.findAll());
         }
 
         // 카트에도 메뉴 추가 후 db에 갱신

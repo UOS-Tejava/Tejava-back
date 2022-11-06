@@ -178,7 +178,7 @@ public class CartService {
         }
 
         // 카트에도 메뉴 추가 후 db에 갱신
-        shoppingCartRepository.saveAndFlush(shoppingCart);
+        shoppingCartRepository.save(shoppingCart);
     }
 
     // 카트의 메뉴 아이템 하나 삭제하기

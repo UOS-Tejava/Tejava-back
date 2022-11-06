@@ -39,15 +39,15 @@ public class OrderController {
     // 주문하기 : 결제 정보는 프론트에서만 다루고 db에 따로 저장하진 않는 것으로 결정
     @PostMapping("/order/placeOrder") // TODO : 심플 스타일을 선택하는 경우, 와인이 포함되어 있다면 플라스틱 와인잔이 제공됨을 명시해야 한다 !
     @ApiOperation(value = "주문하기", notes = "회원의 주문 내역과 직원 인터페이스 화면의 주문 목록에도 추가되며, 주문 횟수가 1 늘어납니다.")
-    public ResponseEntity<OrderResultDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<OrderResponseDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
 
-        OrderResultDTO orderResultDTO = orderService.placeOrder(orderDTO);
-        return ResponseEntity.ok().body(orderResultDTO);
+        OrderResponseDTO orderResponseDTO = orderService.placeOrder(orderDTO);
+        return ResponseEntity.ok().body(orderResponseDTO);
     }
 
     // 회원의 주문 내역 반환하기
     @PostMapping("/order/history")
-    @ApiOperation(value = "주문 내역 보여주기", notes = "회원의 주문 내역을 반환합니다.")
+    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 반환합니다.")
     public ResponseEntity<List<MenuDTO>> showOrderHistory(@RequestBody UserIdDTO userIdDTO) {
 
         return ResponseEntity.ok().body(orderService.showOrderHistory(userIdDTO));
@@ -62,7 +62,7 @@ public class OrderController {
     }
 
     @GetMapping("/order/showAllMenus")
-    @ApiOperation(value = "모든 메뉴 보여주기", notes = "리스트 형식으로 반환합니다.")
+    @ApiOperation(value = "모든 메뉴 보기", notes = "리스트 형식으로 반환합니다.")
     public ResponseEntity<List<MenuItemDTO>> showAllMenus() {
 
         List<MenuItemDTO> menuList = orderService.showAllMenus();
@@ -70,7 +70,7 @@ public class OrderController {
     }
 
     @GetMapping("/order/showAllOptions/menuId/{menuId}")
-    @ApiOperation(value = "모든 옵션 보여주기", notes = "메뉴별 선택할 수 있는 옵션이 다르며, 리스트 형식으로 반환합니다.")
+    @ApiOperation(value = "특정 메뉴의 가능한 옵션 보기", notes = "메뉴별 선택할 수 있는 옵션이 다르며, 리스트 형식으로 반환합니다.")
     public ResponseEntity<List<OptionsDTO>> showAllOptions(@PathVariable Long menuId) {
 
         List<OptionsDTO> optionsList = orderService.showAllOptions(menuId);
@@ -78,7 +78,7 @@ public class OrderController {
     }
 
     @GetMapping("/order/showAllStyles/menuId/{menuId}")
-    @ApiOperation(value = "모든 스타일 보여주기", notes = "메뉴별 선택할 수 있는 스타일이 다르며, 리스트 형식으로 반환합니다.")
+    @ApiOperation(value = "특정 메뉴의 가능한 스타일 보기", notes = "메뉴별 선택할 수 있는 스타일이 다르며, 리스트 형식으로 반환합니다.")
     public ResponseEntity<List<StyleDTO>> showAllStyles(@PathVariable Long menuId) {
 
         List<StyleDTO> styleList = orderService.showAllStyles(menuId);

@@ -136,6 +136,7 @@ public class EmployeeService {
 
         StockItem stockItem = stockRepository.getById(changeStockInfoDTO.getStockItemId());
         stockItem.setQuantity(changeStockInfoDTO.getQuantity());
+        stockRepository.save(stockItem);
     }
 
     // 일반 유저가 직원의 id 알아서 악의적으로 요청하는 경우를 체크

@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResultDTO {
+public class OrderResponseDTO {
 
+    private Long userId;
+    private Long orderId;
     private String customerName;
     private String customerAddress;
     private String orderDateTime;

@@ -43,57 +43,21 @@ public class OrderService {
 
     // 주문하기
     @Transactional
-    public OrderResultDTO placeOrder(OrderDTO orderDTO) { // TODO: 프론트에서 total price 계산할 건지 확인할 것!
+    public OrderResponseDTO placeOrder(OrderDTO orderDTO) { // TODO : 총 가격은 프론트에서 계산할 것 인지 확실히 하기
 
         User customer = userRepository.findUserById(orderDTO.getUserId());
         userRoleCheck(orderDTO.getUserId());
 
-        OrderResultDTO orderResultDTO = new OrderResultDTO();
-        List<MenuDTO> menuDTOList = orderDTO.getShoppingCartItems();
-        List<Menu> menuList = new ArrayList<>();
-        List<Order> orderList = new ArrayList<>();
-
         Order order = new Order();
         orderRepository.save(order);
+
         OrderHistory orderHistory = orderHistoryRepository.findByUserId(orderDTO.getUserId());
 
-        // style, option, menu 저장 및 총 가격 계산
-        for (MenuDTO menuDTO : menuDTOList) {
-            Menu menu = new Menu();
-            menuRepository.save(menu);
-            Style style = new Style();
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(customer.getId());
 
-            style.setStyle_nm(menuDTO.getStyle().getStyle_nm());
-            style.setStyle_config(menuDTO.getStyle().getStyle_config());
-            style.setStyle_pic(menuDTO.getStyle().getStyle_pic());
-            style.setMenu(menu);
+        List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
 
-            styleRepository.save(style);
-
-            totalPrice += (menuDTO.getPrice() + menuDTO.getStyle().getPrice());
-
-            for (OptionsDTO optionsDTO : menuDTO.getOptions()) {
-                totalPrice += (optionsDTO.getPrice() * optionsDTO.getQuantity());
-
-                Options option = new Options();
-                option.setOption_nm(optionsDTO.getOption_nm());
-                option.setOption_pic(optionsDTO.getOption_pic());
-                option.setPrice(optionsDTO.getPrice());
-                option.setQuantity(optionsDTO.getQuantity());
-                option.setMenu(menu);
-
-                optionsRepository.save(option);
-            }
-
-            menu.setMenu_nm(menuDTO.getMenu_nm());
-            menu.setMenu_pic(menuDTO.getMenu_pic());
-            menu.setMenu_config(menuDTO.getMenu_config());
-            menu.setQuantity(menuDTO.getQuantity());
-            menu.setPrice(menuDTO.getPrice());
-            menu.setOrder(order);
-
-            menuRepository.save(menu);
-        }
+        totalPrice = orderDTO.getTotal_price();
 
         if (customer.getOrder_cnt() >= 5) {
             totalPrice = totalPrice * 0.9;
@@ -107,36 +71,40 @@ public class OrderService {
         orderRepository.save(order);
 
         // 고객의 주문 내역에 추가
-        if (orderRepository.existsByOrderHistoryId(orderHistory.getId())) {
-            orderList = orderRepository.findAllByOrderHistoryId(orderHistory.getId());
-        }
-
-        orderList.add(order);
-        orderHistory.setOrder(orderList);
+        orderHistory.getOrder().add(order);
         orderHistoryRepository.save(orderHistory);
         customer.setOrderHistory(orderHistory);
 
-        // 주문 횟수 1 증가하며 장바구니 초기화
+        // 주문 횟수 1 증가하며 menu 에 orderId를 세팅하고, shoppingCartId는 null 로 초기화
         customer.setOrder_cnt(customer.getOrder_cnt() + 1);
-        menuRepository.deleteAllByShoppingCartId(shoppingCartRepository.findByUserId(customer.getId()).getId());
+
+        for(Menu menu : menuRepository.findAllByOrderId(order.getId())) {
+            menu.setOrder(order);
+            menu.setShoppingCart(null);
+            menuRepository.save(menu);
+        }
         userRepository.save(customer);
 
         // 장바구니 빈 거 확인
         log.info("장바구니 초기화 확인 : " + menuRepository.findAllByShoppingCartId(shoppingCartRepository.findByUserId(customer.getId()).getId()));
 
         // 반환할 객체의 정보 setting
-        orderResultDTO.setCustomerName(customer.getName());
-        orderResultDTO.setCustomerAddress(customer.getAddress());
-        orderResultDTO.setOrderDateTime(orderDTO.getOrderDateTime());
-        orderResultDTO.setTotalPrice(totalPrice);
+        OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
+
+        orderResponseDTO.setUserId(customer.getId());
+        orderResponseDTO.setOrderId(order.getId());
+        orderResponseDTO.setCustomerName(customer.getName());
+        orderResponseDTO.setCustomerAddress(customer.getAddress());
+        orderResponseDTO.setOrderDateTime(orderDTO.getOrderDateTime());
+        orderResponseDTO.setTotalPrice(totalPrice);
 
         totalPrice = 0.0;
 
-        return orderResultDTO;
+        return orderResponseDTO;
     }
 
     @Transactional // TODO : 주문 이후 메뉴 디테일 수정시, 가격의 일부분 환불 혹은 추가 결제가 필요하기에 주문 이후에 수정할 수 있도록 할 것인지 의논해볼 것!
-    // TODO : 금액이 늘어났다면 초과된 가격을 결제하도록 결제화면으로 이동하면 되는 데, 일부 반환을 해야하는 경우, 어떠한 경로로 줄 건지! (ex. point) -> 이렇게 되면 결제 시, 포인트를 사용 가능하게 하면 됨
+    // TODO : 금액이 늘어났다면 초과된 가격을 결제하도록 결제화면으로 이동하면 되는 데, 일부 반환을 해야하는 경우, 어떻게 줄 건지! (ex. point) -> 이렇게 되면 결제 시, 포인트를 사용 가능하게 하면 됨
     // 주문 이후 접수 대기 중인 상태일 때, 메뉴 디테일(옵션/스타일) 수정하기
     public void updateMenuDetail(ChangeMenuDetailDTO changeMenuDetailDTO) {
 
@@ -240,11 +208,17 @@ public class OrderService {
 
         OrderHistory orderHistory = orderHistoryRepository.findByUserId(customer.getId());
 
-        List<MenuDTO> result = new ArrayList<>();
+        List<MenuDTO> menuDTOList = new ArrayList<>();
         for (Order order : orderRepository.findAllByOrderHistoryId(orderHistory.getId())) {
-            result.addAll(order.getMenu().stream().map(MenuDTO::from).collect(Collectors.toList()));
+            menuDTOList.addAll(order.getMenu().stream().map(MenuDTO::from).collect(Collectors.toList()));
         }
-        return result;
+
+        // 주문상태 반영 (MenuDTO 클래스에서 연결되어 있지 않은 order 테이블 접근이 안되기 때문)
+        for (MenuDTO menuDTO : menuDTOList) {
+            menuDTO.setOrderStatus(orderRepository.findOrderById(menuRepository.getMenuById(menuDTO.getMenuId()).getOrder().getId()).getOrder_status());
+        }
+
+        return menuDTOList;
     }
 
     // 고객의 주문 내역 모두 삭제하기

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Builder
 public class MenuDTO {
 
+    private Long menuId;
     private String menu_nm;
     private String menu_config;
     private String menu_pic;
@@ -21,12 +22,15 @@ public class MenuDTO {
     private List<OptionsDTO> options;
     private StyleDTO style;
 
+    private String orderStatus;
+
     public static MenuDTO from(Menu menu) {
 
         List<OptionsDTO> optionsDTOList = menu.getOptions().stream().map(OptionsDTO::from).collect(Collectors.toList());
         StyleDTO styleDTO = StyleDTO.from(menu);
 
         return MenuDTO.builder()
+                .menuId(menu.getId()) // order 테이블에서 주문 상태에 접근을 위해 필요함
                 .menu_config(menu.getMenu_config())
                 .menu_nm(menu.getMenu_nm())
                 .menu_pic(menu.getMenu_pic())

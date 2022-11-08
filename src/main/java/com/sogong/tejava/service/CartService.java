@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +35,12 @@ public class CartService {
      */
 
     // 카트에 담긴 메뉴 보여주기
-    public List<Menu> showCartItems(UserIdDTO userIdDTO) { // TODO: 하위 클래스인 style과 options가 매핑이 안되어서 dao를 반환하도록 한 상태 -> 개발 완료 후 수정할 것
+    public List<MenuDTO> showCartItems(UserIdDTO userIdDTO) { // TODO: 하위 클래스인 style과 options가 매핑이 안되어서 dao를 반환하도록 한 상태 -> 개발 완료 후 수정할 것
 
         User customer = userRepository.findUserById(userIdDTO.getUserId());
         userRoleCheck(customer.getId());
 
-        return menuRepository.findAllByShoppingCartId(shoppingCartRepository.findByUserId(userIdDTO.getUserId()).getId());
+        return menuRepository.findAllByShoppingCartId(shoppingCartRepository.findByUserId(userIdDTO.getUserId()).getId()).stream().map(MenuDTO::from).collect(Collectors.toList());
     }
 
     @Transactional

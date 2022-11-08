@@ -21,9 +21,9 @@ public class ShoppingCartController {
     // 카트에 담긴 메뉴 아이템 조회하기
     @PostMapping("/cart")
     @ApiOperation(value = "장바구니 조회하기", notes = "장바구니 목록의 메뉴가 리스트 형태로 반환됩니다.")
-    public ResponseEntity<List<Menu>> showCartItems(@RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<MenuDTO>> showCartItems(@RequestBody UserIdDTO userIdDTO) {
 
-        List<Menu> menuList = cartService.showCartItems(userIdDTO);
+        List<MenuDTO> menuList = cartService.showCartItems(userIdDTO);
         return ResponseEntity.ok().body(menuList);
     }
 

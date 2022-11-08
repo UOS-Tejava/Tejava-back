@@ -11,6 +11,5 @@ public class OrderDTO {
 
     private Long userId;
     private double total_price;
-    private String orderDateTime;
     private String req_orderDateTime;
 }

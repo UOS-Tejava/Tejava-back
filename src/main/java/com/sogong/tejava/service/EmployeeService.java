@@ -57,7 +57,7 @@ public class EmployeeService {
         for (Order order : orders) {
             GetOrderListResponseDTO responseDTO = new GetOrderListResponseDTO();
 
-            responseDTO.setOrderedDate(order.getCreatedDate().toString());
+            responseDTO.setOrderedDate(order.getCreatedDate());
             responseDTO.setCustomerName(customer.getName());
             responseDTO.setCustomerAddress(customer.getAddress());
             responseDTO.setMenuDTOList(menuRepository.findAllByOrderId(order.getId()).stream().map(MenuDTO::from).collect(Collectors.toList()));
@@ -132,7 +132,7 @@ public class EmployeeService {
         }
 
         // 비회원 주문이었고, 배달 완료 상태로 바꾼다면 비회원을 테이블에서 삭제! -> cascade 로 장바구니도 사라짐
-        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed)) {
+        if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed.toString())) {
             if (userRepository.findUserById(changeOrderStatusDTO.getUserId()).getRole().equals(Role.NOT_MEMBER)) {
                 userRepository.delete(userRepository.findUserById(changeOrderStatusDTO.getUserId()));
             }

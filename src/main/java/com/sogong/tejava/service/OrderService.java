@@ -43,8 +43,6 @@ public class OrderService {
     @Transactional
     public OrderResponseDTO placeOrder(OrderDTO orderDTO) {
 
-        double totalPrice = orderDTO.getTotal_price();
-
         User customer = userRepository.findUserById(orderDTO.getUserId());
         userRoleCheck(orderDTO.getUserId());
 
@@ -57,13 +55,8 @@ public class OrderService {
 
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
 
-        // 프론트에서 처리
-//        if (customer.getOrder_cnt() >= 5) {
-//            totalPrice = totalPrice * 0.9;
-//        }
-
         // 주문 테이블에 order 객체 저장
-        order.setTotal_price(totalPrice);
+        order.setTotal_price(orderDTO.getTotal_price());
         order.setMenu(menuList);
         order.setOrderHistory(orderHistory);
         order.setOrder_status(OrderStatus.pending.toString());
@@ -95,9 +88,9 @@ public class OrderService {
         orderResponseDTO.setOrderId(order.getId());
         orderResponseDTO.setCustomerName(customer.getName());
         orderResponseDTO.setCustomerAddress(customer.getAddress());
-        orderResponseDTO.setOrderDateTime(orderDTO.getOrderDateTime());
+        orderResponseDTO.setOrderDateTime(order.getCreatedDate());
         orderResponseDTO.setReq_orderDateTime(orderDTO.getReq_orderDateTime());
-        orderResponseDTO.setTotalPrice(totalPrice);
+        orderResponseDTO.setTotalPrice(orderDTO.getTotal_price());
 
         return orderResponseDTO;
     }

@@ -21,14 +21,14 @@ public class LoginController {
 
     @GetMapping("/")
     @ApiOperation(value = "홈 화면", notes = "첫 화면입니다. 세션을 가져와 회원을 반환합니다.\n세션이 없다면 비회원으로 세션을 생성합니다.")
-    public ResponseEntity<UserDTO> home(HttpServletRequest request) {
+    public ResponseEntity<?> home(HttpServletRequest request) {
         return ResponseEntity.ok().body(userService.home(request));
     }
 
     @PostMapping("/login")
     @ApiOperation(value = "로그인", notes = "아이디와 비밀번호로 로그인합니다.")
-    public ResponseEntity<UserDTO> login(@Validated @RequestBody LoginDTO loginDTO) {
-        return ResponseEntity.ok().body(userService.login(loginDTO.getUid(), loginDTO.getPwd(), loginDTO.getStaySignedIn()));
+    public ResponseEntity<UserDTO> login(HttpServletRequest request, @Validated @RequestBody LoginDTO loginDTO) {
+        return ResponseEntity.ok().body(userService.login(request, loginDTO.getUid(), loginDTO.getPwd(), loginDTO.getStaySignedIn()));
     }
 
 //    @Async

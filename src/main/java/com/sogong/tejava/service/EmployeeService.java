@@ -8,15 +8,14 @@ import com.sogong.tejava.entity.customer.Menu;
 import com.sogong.tejava.entity.customer.Options;
 import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.entity.employee.StockItem;
-import com.sogong.tejava.repository.OrderRepository;
-import com.sogong.tejava.repository.StockRepository;
-import com.sogong.tejava.repository.UserRepository;
+import com.sogong.tejava.repository.*;
 import com.sogong.tejava.util.SessionConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,21 +33,43 @@ public class EmployeeService {
     private final StockRepository stockRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final MenuRepository menuRepository;
 
     @Autowired
-    public EmployeeService(StockRepository stockRepository, OrderRepository orderRepository, UserRepository userRepository) {
+    public EmployeeService(StockRepository stockRepository, OrderRepository orderRepository, UserRepository userRepository, OrderHistoryRepository orderHistoryRepository, MenuRepository menuRepository) {
         this.stockRepository = stockRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.menuRepository = menuRepository;
     }
 
     // 들어온 모든 주문 조회
-    public List<OrderDTO> getOrderList(HttpServletRequest request, UserIdDTO userIdDTO) {
+    public List<GetOrderListResponseDTO> getOrderList(HttpServletRequest request, UserIdDTO userIdDTO) {
 
         requestCheck(request, userIdDTO.getUserId());
         userRoleCheck(userIdDTO.getUserId());
 
-        return orderRepository.findAll().stream().map(OrderDTO::from).collect(Collectors.toList());
+        User customer = userRepository.findUserById(userIdDTO.getUserId());
+        List<Order> orders = orderRepository.findAll();
+
+        List<GetOrderListResponseDTO> result = new ArrayList<>();
+
+        for (Order order : orders) {
+            GetOrderListResponseDTO responseDTO = new GetOrderListResponseDTO();
+
+            responseDTO.setOrderedDate(order.getCreatedDate().toString());
+            responseDTO.setCustomerName(customer.getName());
+            responseDTO.setCustomerAddress(customer.getAddress());
+            responseDTO.setMenuDTOList(menuRepository.findAllByOrderId(order.getId()).stream().map(MenuDTO::from).collect(Collectors.toList()));
+            responseDTO.setTotalPrice(order.getTotal_price());
+            responseDTO.setReq_orderDateTime(order.getReq_orderDateTime());
+            responseDTO.setReq_orderDateTime(order.getReq_orderDateTime());
+            responseDTO.setOrderStatus(order.getOrder_status());
+
+            result.add(responseDTO);
+        }
+
+        return result;
     }
 
     // 주문 상태 변경하기

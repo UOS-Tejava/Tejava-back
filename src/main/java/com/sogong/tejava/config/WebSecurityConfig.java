@@ -60,7 +60,6 @@ public class WebSecurityConfig {
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK)
                         )
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me"))
                 .rememberMe(rememberMe -> rememberMe

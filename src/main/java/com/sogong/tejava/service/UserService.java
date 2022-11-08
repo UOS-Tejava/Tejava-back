@@ -1,5 +1,6 @@
 package com.sogong.tejava.service;
 
+import com.sogong.tejava.dto.NotMemberDTO;
 import com.sogong.tejava.dto.RegisterDTO;
 import com.sogong.tejava.dto.UserDTO;
 import com.sogong.tejava.entity.Order;
@@ -95,7 +96,7 @@ public class UserService {
         return userRepository.existsByUid(uid);
     }
 
-    public UserDTO home(HttpServletRequest request) {
+    public Object home(HttpServletRequest request) {
         // 세션을 가져와 회원을 반환합니다. 반환된 회원이 없다면 비회원을 생성하여 반환
 
         HttpSession currentSession = request.getSession(false);
@@ -105,28 +106,44 @@ public class UserService {
             HttpSession notMemberSession = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession();
 
             User notMember = new User();
+            // 비회원 유저 세팅
+            notMember.setName("비회원");
+            notMember.setRole(Role.NOT_MEMBER);
+
+            userRepository.save(notMember);
 
             // 비회원을 위한 장바구니 생성
-            ShoppingCart.createCart(notMember);
-
-            // 비회원 유저 세팅
-            notMember.setShoppingCart(shoppingCartRepository.findByUserId(notMember.getId()));
-            notMember.setRole(Role.NOT_MEMBER);
-            notMember.setName("비회원");
-
-            // 세션에 비회원 정보 보관
-            notMemberSession.setAttribute(SessionConst.NOT_MEMBER, notMember);
+            createCartTb(notMember);
+            createOrderHistoryTb(notMember);
+            createOrderTb(notMember);
 
             // 비회원 db에 저장
             userRepository.save(notMember);
 
-            return null;
+            // 세션에 비회원 정보 보관
+            notMemberSession.setAttribute(SessionConst.NOT_MEMBER, notMember);
+
+            return NotMemberDTO.fromNotMember(notMember);
         }
 
-        return UserDTO.from((User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER));
+        // 로그인 세션이 없다면 비회원 세션의 정보 반환
+        if(currentSession.getAttribute(SessionConst.LOGIN_MEMBER) != null) {
+            return UserDTO.from((User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER));
+        } else {
+            return NotMemberDTO.fromNotMember((User) currentSession.getAttribute(SessionConst.NOT_MEMBER));
+        }
     }
 
-    public UserDTO login(String uid, String password, Boolean staySignedIn) { // TODO: bool 값은 사용하고 있지 않다는 거 체크할 것
+    public UserDTO login(HttpServletRequest request, String uid, String password, Boolean staySignedIn) { // TODO: bool 값은 사용하고 있지 않다는 거 체크할 것
+
+        // 홈화면 들어갈 시 생성되었던 세션 삭제 및 비회원 삭제
+        HttpSession currentSession = request.getSession(false);
+        if (currentSession != null) {
+            if( currentSession.getAttribute(SessionConst.NOT_MEMBER) != null) {
+                userRepository.delete((User) currentSession.getAttribute(SessionConst.NOT_MEMBER));
+            }
+            currentSession.invalidate();
+        }
 
         User loginMember = userRepository.findUserByUid(uid);
         log.info(String.valueOf(loginMember));
@@ -158,12 +175,6 @@ public class UserService {
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
                 }
             }
-        }
-
-        // 홈화면 들어갈 시 생성되었던 세션 삭제
-        HttpSession notMemberSession = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession(false);
-        if (notMemberSession != null) {
-            notMemberSession.invalidate();
         }
 
         // 신규 세션 생성

@@ -22,8 +22,6 @@ public class MenuDTO {
     private List<OptionsDTO> options;
     private StyleDTO style;
 
-    private String orderStatus;
-
     public static MenuDTO from(Menu menu) {
 
         List<OptionsDTO> optionsDTOList = menu.getOptions().stream().map(OptionsDTO::from).collect(Collectors.toList());

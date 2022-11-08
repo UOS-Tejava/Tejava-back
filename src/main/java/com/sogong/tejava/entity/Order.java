@@ -24,6 +24,7 @@ public class Order extends BaseTimeEntity {
 
     private double total_price;
     private String order_status;
+    private String req_orderDateTime;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,7 +32,7 @@ public class Order extends BaseTimeEntity {
     private OrderHistory orderHistory;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_table_id", referencedColumnName = "id")
     private List<Menu> menu;
 

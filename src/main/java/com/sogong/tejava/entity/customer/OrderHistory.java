@@ -28,7 +28,7 @@ public class OrderHistory extends BaseTimeEntity {
     private User user;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "orderHistory")
+    @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.REMOVE)
     private List<Order> order = new ArrayList<>();
 
     public static OrderHistory createOrderHistory(User user) {

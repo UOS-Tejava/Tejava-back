@@ -21,9 +21,9 @@ public class EmployeeController {
     // 주문 현황 보여주기
     @PostMapping("/employee/orders")
     @ApiOperation(value = "주문 현황 조회하기", notes = "직원 인터페이스의 홈화면에서 접수된 주문 목록을 확인할 수 있습니다.")
-    public ResponseEntity<List<OrderDTO>> showOrders(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<GetOrderListResponseDTO>> showOrders(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
 
-        List<OrderDTO> orderList = employeeService.getOrderList(request, userIdDTO);
+        List<GetOrderListResponseDTO> orderList = employeeService.getOrderList(request, userIdDTO);
         return ResponseEntity.ok().body(orderList);
     }
 

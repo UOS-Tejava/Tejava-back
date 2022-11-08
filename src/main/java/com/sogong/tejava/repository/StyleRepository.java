@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface StyleRepository extends JpaRepository<Style, Long> {
 
     void deleteByMenuId(Long menuId);
+
+    Style findByMenuId(Long menuId);
 }

@@ -37,6 +37,4 @@ public class ShoppingCart extends BaseTimeEntity {
 
         return shoppingCart;
     }
-
-
 }

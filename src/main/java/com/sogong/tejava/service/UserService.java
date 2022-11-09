@@ -127,7 +127,7 @@ public class UserService {
         }
 
         // 로그인 세션이 없다면 비회원 세션의 정보 반환
-        if(currentSession.getAttribute(SessionConst.LOGIN_MEMBER) != null) {
+        if (currentSession.getAttribute(SessionConst.LOGIN_MEMBER) != null) {
             return UserDTO.from((User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER));
         } else {
             return NotMemberDTO.fromNotMember((User) currentSession.getAttribute(SessionConst.NOT_MEMBER));
@@ -139,7 +139,7 @@ public class UserService {
         // 홈화면 들어갈 시 생성되었던 세션 삭제 및 비회원 삭제
         HttpSession currentSession = request.getSession(false);
         if (currentSession != null) {
-            if( currentSession.getAttribute(SessionConst.NOT_MEMBER) != null) {
+            if (currentSession.getAttribute(SessionConst.NOT_MEMBER) != null) {
                 userRepository.delete((User) currentSession.getAttribute(SessionConst.NOT_MEMBER));
             }
             currentSession.invalidate();

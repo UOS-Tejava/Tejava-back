@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Order findOrderById(Long orderId);
+
     List<Order> findAllByOrderHistoryId(Long orderHistoryId);
-    boolean existsByOrderHistoryId(Long orderHistoryId);
 }

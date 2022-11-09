@@ -1,7 +1,6 @@
 package com.sogong.tejava.dto;
 
 import com.sogong.tejava.entity.customer.Menu;
-import com.sogong.tejava.entity.customer.Style;
 import com.sogong.tejava.entity.style.StyleItem;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +16,7 @@ public class StyleDTO {
     private String style_pic;
     private int price;
 
-    public static StyleDTO from(Menu menu){
+    public static StyleDTO from(Menu menu) {
         return StyleDTO.builder()
                 .style_nm(menu.getStyle().getStyle_nm())
                 .style_config(menu.getStyle().getStyle_config())
@@ -26,7 +25,7 @@ public class StyleDTO {
                 .build();
     }
 
-    public static StyleDTO from(StyleItem style){
+    public static StyleDTO from(StyleItem style) {
         return StyleDTO.builder()
                 .style_nm(style.getStyle_nm())
                 .style_config(style.getStyle_config())
@@ -34,5 +33,4 @@ public class StyleDTO {
                 .price(style.getPrice())
                 .build();
     }
-
 }

@@ -15,7 +15,7 @@ public class MenuItemDTO {
     private String menu_pic;
     private int price;
 
-    public static MenuItemDTO from(MenuItem menu){
+    public static MenuItemDTO from(MenuItem menu) {
         return MenuItemDTO.builder()
                 .menu_config(menu.getMenu_config())
                 .menu_nm(menu.getMenu_nm())
@@ -24,5 +24,3 @@ public class MenuItemDTO {
                 .build();
     }
 }
-
-

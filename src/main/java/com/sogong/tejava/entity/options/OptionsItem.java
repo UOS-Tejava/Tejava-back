@@ -1,6 +1,5 @@
 package com.sogong.tejava.entity.options;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.menu.MenuItem;
@@ -14,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name="options_item")
+@Table(name = "options_item")
 public class OptionsItem extends BaseTimeEntity {
 
     @Id

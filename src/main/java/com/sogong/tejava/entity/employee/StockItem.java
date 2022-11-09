@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name="stock_item")
-public class StockItem  extends BaseTimeEntity {
+@Table(name = "stock_item")
+public class StockItem extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

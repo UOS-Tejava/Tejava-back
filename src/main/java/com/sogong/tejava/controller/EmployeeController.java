@@ -27,7 +27,7 @@ public class EmployeeController {
         return ResponseEntity.ok().body(orderList);
     }
 
-    // 주문 상태 바꾸기 (pending, cooking, delivering, done)
+    // 주문 상태 바꾸기 (pending, cooking, delivering, completed)
     @PatchMapping("/employee/order-status")
     @ApiOperation(value = "주문 상태 바꾸기", notes = "pending(접수 대기 중), cooking(조리 중), delivering(배달 중), completed(배달 완료)로 총 4가지의 주문 상태가 있습니다.")
     public ResponseEntity<?> updateOrderStatus(HttpServletRequest request, @RequestBody ChangeOrderStatusDTO changeOrderStatusDTO) {

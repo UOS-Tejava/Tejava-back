@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name="menu_item")
+@Table(name = "menu_item")
 public class MenuItem extends BaseTimeEntity {
 
     @Id

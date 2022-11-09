@@ -36,7 +36,7 @@ public class EmployeeService {
     private final MenuRepository menuRepository;
 
     @Autowired
-    public EmployeeService(StockRepository stockRepository, OrderRepository orderRepository, UserRepository userRepository, OrderHistoryRepository orderHistoryRepository, MenuRepository menuRepository) {
+    public EmployeeService(StockRepository stockRepository, OrderRepository orderRepository, UserRepository userRepository, MenuRepository menuRepository) {
         this.stockRepository = stockRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
@@ -44,12 +44,14 @@ public class EmployeeService {
     }
 
     // 들어온 모든 주문 조회
-    public List<GetOrderListResponseDTO> getOrderList(HttpServletRequest request, UserIdDTO userIdDTO) {
+    public List<GetOrderListResponseDTO> getOrderList(HttpServletRequest request) {
 
-        requestCheck(request, userIdDTO.getUserId());
-        userRoleCheck(userIdDTO.getUserId());
+        User user = getUserFromRequest(request);
 
-        User customer = userRepository.findUserById(userIdDTO.getUserId());
+        requestCheck(request, user.getId());
+        userRoleCheck(user.getId());
+
+        User customer = userRepository.findUserById(user.getId());
         List<Order> orders = orderRepository.findAll();
 
         List<GetOrderListResponseDTO> result = new ArrayList<>();
@@ -141,10 +143,12 @@ public class EmployeeService {
     }
 
     // 재고 현황 보여주기
-    public List<StockItemDTO> showStockInfo(HttpServletRequest request, UserIdDTO userIdDTO) {
+    public List<StockItemDTO> showStockInfo(HttpServletRequest request) {
 
-        requestCheck(request, userIdDTO.getUserId());
-        userRoleCheck(userIdDTO.getUserId());
+        User user = getUserFromRequest(request);
+
+        requestCheck(request, user.getId());
+        userRoleCheck(user.getId());
 
         return stockRepository.findAll().stream().map(StockItemDTO::from).collect(Collectors.toList());
     }
@@ -174,6 +178,17 @@ public class EmployeeService {
 
         if (!user.getRole().equals(Role.ADMINISTRATOR)) {
             throw new AccessDeniedException("관리자 외 접근이 불가능한 페이지입니다.\n직원이시라면 접근 권한 신청 부탁드립니다.");
+        }
+    }
+
+    public User getUserFromRequest(HttpServletRequest request) {
+        User loginMember = (User) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
+        User notMember = (User) request.getSession(false).getAttribute(SessionConst.NOT_MEMBER);
+
+        if (loginMember == null) {
+            return notMember;
+        } else {
+            return loginMember;
         }
     }
 }

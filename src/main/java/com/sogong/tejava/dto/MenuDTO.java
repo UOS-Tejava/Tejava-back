@@ -3,7 +3,6 @@ package com.sogong.tejava.dto;
 import com.sogong.tejava.entity.customer.Menu;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

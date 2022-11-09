@@ -19,16 +19,16 @@ public class EmployeeController {
     }
 
     // 주문 현황 보여주기
-    @PostMapping("/employee/orders")
+    @GetMapping("/employee/orders")
     @ApiOperation(value = "주문 현황 조회하기", notes = "직원 인터페이스의 홈화면에서 접수된 주문 목록을 확인할 수 있습니다.")
-    public ResponseEntity<List<GetOrderListResponseDTO>> showOrders(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<GetOrderListResponseDTO>> showOrders(HttpServletRequest request) {
 
-        List<GetOrderListResponseDTO> orderList = employeeService.getOrderList(request, userIdDTO);
+        List<GetOrderListResponseDTO> orderList = employeeService.getOrderList(request);
         return ResponseEntity.ok().body(orderList);
     }
 
     // 주문 상태 바꾸기 (pending, cooking, delivering, done)
-    @PatchMapping("/employee/orderStatus")
+    @PatchMapping("/employee/order-status")
     @ApiOperation(value = "주문 상태 바꾸기", notes = "pending(접수 대기 중), cooking(조리 중), delivering(배달 중), completed(배달 완료)로 총 4가지의 주문 상태가 있습니다.")
     public ResponseEntity<?> updateOrderStatus(HttpServletRequest request, @RequestBody ChangeOrderStatusDTO changeOrderStatusDTO) {
 
@@ -37,11 +37,11 @@ public class EmployeeController {
     }
 
     // 재고 현황 보여주기
-    @PostMapping("/employee/stock-info")
+    @GetMapping("/employee/stock-info")
     @ApiOperation(value = "재고 현황 보여주기", notes = "재료와 마실 것(커피, 와인, 샴페인의 재고를 인분을 기준으로 보여줍니다.")
-    public ResponseEntity<List<StockItemDTO>> showStockInfo(HttpServletRequest request, @RequestBody UserIdDTO userIdDTO) {
+    public ResponseEntity<List<StockItemDTO>> showStockInfo(HttpServletRequest request) {
 
-        List<StockItemDTO> stockItemList = employeeService.showStockInfo(request, userIdDTO);
+        List<StockItemDTO> stockItemList = employeeService.showStockInfo(request);
         return ResponseEntity.ok().body(stockItemList);
     }
 

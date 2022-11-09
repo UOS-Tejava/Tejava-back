@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -28,16 +29,16 @@ public class OrderController {
     }
 
     // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 결제 취소하기 -> 주문내역에서도 삭제!
-    @DeleteMapping("/order/cancel")
-    @ApiOperation(value = "주문 이후에 결제 취소하기", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능하며, 주문 횟수가 1 줄어듭니다.")
-    public ResponseEntity<?> cancelOrder(@RequestBody CancelOrderDTO cancelOrderDTO) {
+    @DeleteMapping("/order/cancel/orderId/{orderId}")
+    @ApiOperation(value = "주문 이후에 결제 취소하기", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능하며, 비회원이 아니라면 주문 횟수가 1 줄어듭니다.")
+    public ResponseEntity<?> cancelOrder(HttpServletRequest request, @PathVariable Long orderId) {
 
-        orderService.cancelOrder(cancelOrderDTO);
+        orderService.cancelOrder(request, orderId);
         return ResponseEntity.ok().build();
     }
 
     // 주문하기 : 결제 정보는 프론트에서만 다루고 db에 따로 저장하진 않는 것으로 결정
-    @PostMapping("/order/placeOrder") // TODO : 심플 스타일을 선택하는 경우, 와인이 포함되어 있다면 플라스틱 와인잔이 제공됨을 명시해야 한다 !
+    @PostMapping("/order/place-order") // TODO : 심플 스타일을 선택하는 경우, 와인이 포함되어 있다면 플라스틱 와인잔이 제공됨을 명시해야 한다 !
     @ApiOperation(value = "주문하기", notes = "회원의 주문 내역과 직원 인터페이스 화면의 주문 목록에도 추가되며, 주문 횟수가 1 늘어납니다.")
     public ResponseEntity<OrderResponseDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
 
@@ -46,11 +47,11 @@ public class OrderController {
     }
 
     // 회원의 주문 내역 반환하기
-    @PostMapping("/order/history")
-    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 반환합니다.")
-    public ResponseEntity<List<MenuDTO>> showOrderHistory(@RequestBody UserIdDTO userIdDTO) {
+    @GetMapping("/order/history")
+    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
+    public ResponseEntity<List<MenuDTO>> showOrderHistory(HttpServletRequest request) {
 
-        return ResponseEntity.ok().body(orderService.showOrderHistory(userIdDTO));
+        return ResponseEntity.ok().body(orderService.showOrderHistory(request));
     }
 
     @GetMapping("/order/showAllMenus")

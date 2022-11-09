@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -19,11 +20,11 @@ public class ShoppingCartController {
     }
 
     // 카트에 담긴 메뉴 아이템 조회하기
-    @PostMapping("/cart")
-    @ApiOperation(value = "장바구니 조회하기", notes = "장바구니 목록의 메뉴가 리스트 형태로 반환됩니다.")
-    public ResponseEntity<List<MenuDTO>> showCartItems(@RequestBody UserIdDTO userIdDTO) {
+    @GetMapping("/cart")
+    @ApiOperation(value = "장바구니 조회하기", notes = "장바구니에 담긴 메뉴가 리스트 형태로 반환됩니다.")
+    public ResponseEntity<List<MenuDTO>> showCartItems(HttpServletRequest request) {
 
-        List<MenuDTO> menuList = cartService.showCartItems(userIdDTO);
+        List<MenuDTO> menuList = cartService.showCartItems(request);
         return ResponseEntity.ok().body(menuList);
     }
 
@@ -46,11 +47,11 @@ public class ShoppingCartController {
     }
 
     // 카트의 메뉴 아이템 한 개 삭제하기
-    @DeleteMapping("/cart/delete-one")
+    @DeleteMapping("/cart/delete-one/menuId/{menuId}")
     @ApiOperation(value = "장바구니에서 메뉴 한 개 삭제하기", notes = "장바구니 목록에서 하나의 아이템 옆의 휴지통을 클릭하여 실행합니다.")
-    public ResponseEntity<?> deleteOne(@RequestBody CancelMenuFromCartDTO cancelMenuFromCartDTO) {
+    public ResponseEntity<?> deleteOne(HttpServletRequest request, @PathVariable Long menuId) {
 
-        cartService.deleteOne(cancelMenuFromCartDTO);
+        cartService.deleteOne(request, menuId);
         return ResponseEntity.ok().build();
     }
 }

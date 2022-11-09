@@ -6,12 +6,14 @@ import com.sogong.tejava.entity.customer.*;
 import com.sogong.tejava.entity.options.OptionsItem;
 import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.repository.*;
+import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -174,14 +176,14 @@ public class OrderService {
 
     // 주문한 내역에서 주문 취소
     @Transactional
-    public void cancelOrder(CancelOrderDTO cancelOrderDTO) {
+    public void cancelOrder(HttpServletRequest request, Long orderId) {
 
-        User customer = userRepository.findUserById(cancelOrderDTO.getUserId());
-        userRoleCheck(cancelOrderDTO.getUserId());
+        User user = getUserFromRequest(request);
+        userRoleCheck(user.getId());
 
-        OrderHistory orderHistory = orderHistoryRepository.findByUserId(customer.getId());
+        OrderHistory orderHistory = orderHistoryRepository.findByUserId(user.getId());
 
-        Order order = orderRepository.findOrderById(cancelOrderDTO.getOrderId());
+        Order order = orderRepository.findOrderById(orderId);
 
         if (!order.getOrder_status().equals(OrderStatus.pending.toString())) {
             throw new IllegalStateException("주문이 이미 접수되어 취소 불가합니다.");
@@ -192,22 +194,27 @@ public class OrderService {
         orderHistory.setOrder(orderRepository.findAllByOrderHistoryId(orderHistory.getId()));
         orderHistoryRepository.save(orderHistory);
 
-        // 주문 횟수 1 감소
-        customer.setOrder_cnt(customer.getOrder_cnt() - 1);
-        userRepository.save(customer);
+        // 비회원이 아니라면 주문 횟수 1 감소
+        if (!user.getRole().equals(Role.NOT_MEMBER)) {
+            user.setOrder_cnt(user.getOrder_cnt() - 1);
+            userRepository.save(user);
+        }
     }
 
     // 고객의 주문 내역 보여주기
-    public List<MenuDTO> showOrderHistory(UserIdDTO userIdDTO) {
+    public List<MenuDTO> showOrderHistory(HttpServletRequest request) {
 
-        User customer = userRepository.findUserById(userIdDTO.getUserId());
-        userRoleCheck(userIdDTO.getUserId());
+        User user = getUserFromRequest(request);
 
-        OrderHistory orderHistory = orderHistoryRepository.findByUserId(customer.getId());
+        OrderHistory orderHistory = orderHistoryRepository.findByUserId(user.getId());
 
         List<MenuDTO> menuDTOList = new ArrayList<>();
         for (Order order : orderRepository.findAllByOrderHistoryId(orderHistory.getId())) {
             menuDTOList.addAll(order.getMenu().stream().map(MenuDTO::from).collect(Collectors.toList()));
+        }
+
+        if (user.getRole().equals(Role.NOT_MEMBER)) {
+            return null;
         }
 
         return menuDTOList;
@@ -247,6 +254,17 @@ public class OrderService {
 
         if (user.getRole().equals(Role.ADMINISTRATOR)) {
             throw new AccessDeniedException("일반 회원이 사용하실 수 있는 기능입니다.");
+        }
+    }
+
+    public User getUserFromRequest(HttpServletRequest request) {
+        User loginMember = (User) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
+        User notMember = (User) request.getSession(false).getAttribute(SessionConst.NOT_MEMBER);
+
+        if (loginMember == null) {
+            return notMember;
+        } else {
+            return loginMember;
         }
     }
 }

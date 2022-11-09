@@ -19,7 +19,7 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
+    @PostMapping("/")
     @ApiOperation(value = "홈 화면", notes = "첫 화면입니다. 세션을 가져와 회원을 반환합니다.\n세션이 없다면 비회원으로 세션을 생성합니다.")
     public ResponseEntity<?> home(HttpServletRequest request) {
         return ResponseEntity.ok().body(userService.home(request));

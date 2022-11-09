@@ -5,12 +5,14 @@ import com.sogong.tejava.dto.OptionsDTO;
 import com.sogong.tejava.entity.customer.*;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.repository.*;
+import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,12 +37,12 @@ public class CartService {
      */
 
     // 카트에 담긴 메뉴 보여주기
-    public List<MenuDTO> showCartItems(UserIdDTO userIdDTO) { // TODO: 하위 클래스인 style과 options가 매핑이 안되어서 dao를 반환하도록 한 상태 -> 개발 완료 후 수정할 것
+    public List<MenuDTO> showCartItems(HttpServletRequest request) {
 
-        User customer = userRepository.findUserById(userIdDTO.getUserId());
-        userRoleCheck(customer.getId());
+        User user = getUserFromRequest(request);
+        userRoleCheck(user.getId());
 
-        return menuRepository.findAllByShoppingCartId(shoppingCartRepository.findByUserId(userIdDTO.getUserId()).getId()).stream().map(MenuDTO::from).collect(Collectors.toList());
+        return menuRepository.findAllByShoppingCartId(shoppingCartRepository.findByUserId(user.getId()).getId()).stream().map(MenuDTO::from).collect(Collectors.toList());
     }
 
     @Transactional
@@ -183,14 +185,14 @@ public class CartService {
 
     // 카트의 메뉴 아이템 하나 삭제하기
     @Transactional
-    public void deleteOne(CancelMenuFromCartDTO cancelMenuFromCartDTO) {
+    public void deleteOne(HttpServletRequest request, Long menuId) {
 
-        User customer = userRepository.findUserById(cancelMenuFromCartDTO.getUserId());
-        userRoleCheck(cancelMenuFromCartDTO.getUserId());
+        User user = getUserFromRequest(request);
+        userRoleCheck(user.getId());
 
-        ShoppingCart shoppingCart = customer.getShoppingCart();
+        ShoppingCart shoppingCart = user.getShoppingCart();
 
-        menuRepository.deleteById(cancelMenuFromCartDTO.getMenuId());
+        menuRepository.deleteById(menuId);
         shoppingCart.setMenu(menuRepository.findAllByShoppingCartId(shoppingCart.getId()));
         shoppingCartRepository.save(shoppingCart);
     }
@@ -238,5 +240,16 @@ public class CartService {
             }
         }
         return null;
+    }
+
+    public User getUserFromRequest(HttpServletRequest request) {
+        User loginMember = (User) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
+        User notMember = (User) request.getSession(false).getAttribute(SessionConst.NOT_MEMBER);
+
+        if (loginMember == null) {
+            return notMember;
+        } else {
+            return loginMember;
+        }
     }
 }

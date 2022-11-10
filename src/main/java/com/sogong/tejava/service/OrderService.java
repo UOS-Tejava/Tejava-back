@@ -3,9 +3,11 @@ package com.sogong.tejava.service;
 import com.sogong.tejava.dto.*;
 import com.sogong.tejava.entity.*;
 import com.sogong.tejava.entity.customer.*;
+import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.entity.options.OptionsItem;
 import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.repository.*;
+import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +42,13 @@ public class OrderService {
     private final MenuItemRepository menuItemRepository;
     private final OptionsItemRepository optionsItemRepository;
     private final StyleItemRepository styleItemRepository;
+    private final StockRepository stockRepository;
 
     // 주문하기
     @Transactional
     public OrderResponseDTO placeOrder(OrderDTO orderDTO) {
+
+        employeeCheck();
 
         User customer = userRepository.findUserById(orderDTO.getUserId());
         userRoleCheck(orderDTO.getUserId());
@@ -56,6 +61,8 @@ public class OrderService {
         ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(customer.getId());
 
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
+
+        stockQuantityCheck(menuList);
 
         // 주문 테이블에 order 객체 저장
         order.setTotal_price(orderDTO.getTotal_price());
@@ -88,8 +95,8 @@ public class OrderService {
 
         orderResponseDTO.setUserId(customer.getId());
         orderResponseDTO.setOrderId(order.getId());
-        orderResponseDTO.setCustomerName(customer.getName());
-        orderResponseDTO.setCustomerAddress(customer.getAddress());
+        orderResponseDTO.setCustomerName(orderDTO.getCustomerName());
+        orderResponseDTO.setCustomerAddress(orderDTO.getCustomerAddress());
         orderResponseDTO.setOrderDateTime(order.getCreatedDate());
         orderResponseDTO.setReq_orderDateTime(orderDTO.getReq_orderDateTime());
         orderResponseDTO.setTotalPrice(orderDTO.getTotal_price());
@@ -130,6 +137,7 @@ public class OrderService {
         // 새로운 옵션 리스트 생성
         List<Options> newOptions = new ArrayList<>();
 
+
         for (OptionsDTO optionsDTO : changeMenuDetailDTO.getNewOptions()) {
             Options option = new Options();
             option.setOption_nm(optionsDTO.getOption_nm());
@@ -157,6 +165,8 @@ public class OrderService {
         menu.setOptions(newOptions);
         menu.setStyle(style);
         menuRepository.save(menu);
+
+        stockQuantityCheck(List.of(menu));
 
         // 반환할 dto 의 정보 세팅
         changeMenuDetailResponseDTO.setPre_price(order.getTotal_price());
@@ -265,6 +275,67 @@ public class OrderService {
             return notMember;
         } else {
             return loginMember;
+        }
+    }
+
+    public void employeeCheck() {
+        if (Const.chef <= 0) {
+            throw new IllegalStateException("현재 요리 가능한 인원이 없어 잠시만 기다려주시면 감사하겠습니다.");
+        } else if (Const.delivery <= 0) {
+            throw new IllegalStateException("현재 배달 가능한 인원이 없어 잠시만 기다려주시면 감사하겠습니다.");
+        }
+
+        log.info("요리 가능한 인원 수 : " + Const.chef + "명");
+        log.info("배달 가능한 인원 수 : " + Const.delivery + "명");
+    }
+
+    private void stockQuantityCheck(List<Menu> menuList) {
+
+        List<StockItem> stockItems = stockRepository.findAll();
+
+        StockItem wine = stockItems.get(0);
+        StockItem coffee = stockItems.get(2);
+        StockItem cheese = stockItems.get(4);
+        StockItem salad = stockItems.get(3);
+        StockItem bread = stockItems.get(5);
+        StockItem champagne = stockItems.get(1);
+
+        for (Menu menu : menuList) {
+            for (Options option : menu.getOptions()) {
+                switch (option.getOption_nm()) {
+                    case "와인 한 잔":
+                        if (option.getQuantity() > wine.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("와인 재고가 부족합니다.");
+                        }
+                    case "커피 한 잔":
+                        if (option.getQuantity() > coffee.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("커피 재고가 부족합니다.");
+                        }
+                    case "치즈":
+                        if (option.getQuantity() > cheese.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("치즈 재고가 부족합니다.");
+                        }
+                    case "샐러드":
+                        if (option.getQuantity() > salad.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("샐러드 재고가 부족합니다.");
+                        }
+                    case "빵":
+                    case "바게트 빵":
+                        if (option.getQuantity() > bread.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("빵 재고가 부족합니다.");
+                        }
+                    case "샴페인 한 병":
+                        if (option.getQuantity() > champagne.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("샴페인 재고가 부족합니다.");
+                        }
+                }
+            }
         }
     }
 }

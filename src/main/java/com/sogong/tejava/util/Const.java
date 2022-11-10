@@ -6,4 +6,7 @@ public class Const {
     public static final String TEST_USER_UID = "user";
     public static final String TEST_ADMIN_UID = "admin";
     public static final String ADMIN_REGISTER_VERIFICATION_CODE = "tejava";
+
+    public static int chef = 5;
+    public static int delivery = 5;
 }

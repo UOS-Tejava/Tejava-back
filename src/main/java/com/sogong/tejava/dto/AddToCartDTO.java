@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class AddToCartDTO {
 
     private Long userId;
-    private MenuDTO menu;
+    private AddToCartMenuDTO menu;
 }

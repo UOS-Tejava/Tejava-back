@@ -4,6 +4,7 @@ import com.sogong.tejava.dto.*;
 import com.sogong.tejava.dto.OptionsDTO;
 import com.sogong.tejava.entity.customer.*;
 import com.sogong.tejava.entity.Role;
+import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.repository.*;
 import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class CartService {
     private final StyleRepository styleRepository;
     private final OptionsRepository optionsRepository;
     private final UserRepository userRepository;
+    private final StockRepository stockRepository;
 
     /*
     1. 카트에 담긴 메뉴 보여주기
@@ -94,6 +96,8 @@ public class CartService {
         menu.setOptions(options);
 
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
+
+        stockQuantityCheck(menuList);
 
         log.info("모든 메뉴 리스트 : " + menuList);
 
@@ -250,6 +254,56 @@ public class CartService {
             return notMember;
         } else {
             return loginMember;
+        }
+    }
+
+    private void stockQuantityCheck(List<Menu> menuList) {
+
+        List<StockItem> stockItems = stockRepository.findAll();
+
+        StockItem wine = stockItems.get(0);
+        StockItem coffee = stockItems.get(2);
+        StockItem cheese = stockItems.get(4);
+        StockItem salad = stockItems.get(3);
+        StockItem bread = stockItems.get(5);
+        StockItem champagne = stockItems.get(1);
+
+        for (Menu menu : menuList) {
+            for (Options option : menu.getOptions()) {
+                switch (option.getOption_nm()) {
+                    case "와인 한 잔":
+                        if (option.getQuantity() > wine.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("와인의 재고가 부족합니다.");
+                        }
+                    case "커피 한 잔":
+                        if (option.getQuantity() > coffee.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("커피의 재고가 부족합니다.");
+                        }
+                    case "치즈":
+                        if (option.getQuantity() > cheese.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("치즈의 재고가 부족합니다.");
+                        }
+                    case "샐러드":
+                        if (option.getQuantity() > salad.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("샐러드의 재고가 부족합니다.");
+                        }
+                    case "빵":
+                    case "바게트 빵":
+                        if (option.getQuantity() > bread.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("빵의 재고가 부족합니다.");
+                        }
+                    case "샴페인 한 병":
+                        if (option.getQuantity() > champagne.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("샴페인의 재고가 부족합니다.");
+                        }
+                }
+            }
         }
     }
 }

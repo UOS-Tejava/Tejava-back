@@ -1,5 +1,6 @@
 package com.sogong.tejava.dto;
 
+import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ public class UserDTO {
     private String uid;
     private String name;
     private String address;
+    private Role role;
 
     private int order_cnt;
 
@@ -23,6 +25,7 @@ public class UserDTO {
                 .uid(user.getUid())
                 .name(user.getName())
                 .address(user.getAddress())
+                .role(user.getRole())
                 .order_cnt(user.getOrder_cnt())
                 .build();
     }

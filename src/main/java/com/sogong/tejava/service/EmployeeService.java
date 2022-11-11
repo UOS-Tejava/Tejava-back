@@ -9,7 +9,7 @@ import com.sogong.tejava.entity.customer.Options;
 import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.repository.*;
-import com.sogong.tejava.util.Const;
+import com.sogong.tejava.util.EmployeeCapacity;
 import com.sogong.tejava.util.SessionConst;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,16 +156,30 @@ public class EmployeeService {
             stockRepository.save(bread);
             stockRepository.save(champagne);
 
-            Const.chef -= 1;
+            if (EmployeeCapacity.getChef() >= 1) {
+                EmployeeCapacity.decreaseChef();
+            } else {
+                throw new IllegalStateException("가용한 요리 담당 직원이 없습니다.");
+            }
+
         } else if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.delivering.toString())) {
-            Const.chef += 1;
-            Const.delivery -= 1;
+            if (EmployeeCapacity.getChef() == 5) {
+                throw new IllegalStateException("요리 담당 직원은 5명보다 많아질 수 없습니다.");
+            } else if (EmployeeCapacity.getDelivery() == 0) {
+                throw new IllegalStateException("가용한 배달 담당 직원이 없습니다.");
+            }
+
+            EmployeeCapacity.increaseChef();
+            EmployeeCapacity.decreaseDelivery();
         } else if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.completed.toString())) {
-            Const.delivery += 1;
+            if (EmployeeCapacity.getDelivery() == 5) {
+                throw new IllegalStateException("배달 담당 직원은 5명보다 많아질 수 없습니다.");
+            }
+            EmployeeCapacity.increaseDelivery();
         }
 
-        log.info("요리 가능한 인원 수 : " + Const.chef + "명");
-        log.info("배달 가능한 인원 수 : " + Const.delivery + "명");
+        log.info("요리 가능한 인원 수 : " + EmployeeCapacity.getChef() + "명");
+        log.info("배달 가능한 인원 수 : " + EmployeeCapacity.getDelivery() + "명");
 
         orderRepository.save(order);
     }

@@ -7,7 +7,7 @@ import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.entity.options.OptionsItem;
 import com.sogong.tejava.entity.style.StyleItem;
 import com.sogong.tejava.repository.*;
-import com.sogong.tejava.util.Const;
+import com.sogong.tejava.util.EmployeeCapacity;
 import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -279,14 +279,14 @@ public class OrderService {
     }
 
     public void employeeCheck() {
-        if (Const.chef <= 0) {
+        if (EmployeeCapacity.getChef() <= 0) {
             throw new IllegalStateException("현재 요리 가능한 인원이 없어 잠시만 기다려주시면 감사하겠습니다.");
-        } else if (Const.delivery <= 0) {
+        } else if (EmployeeCapacity.getDelivery() <= 0) {
             throw new IllegalStateException("현재 배달 가능한 인원이 없어 잠시만 기다려주시면 감사하겠습니다.");
         }
 
-        log.info("요리 가능한 인원 수 : " + Const.chef + "명");
-        log.info("배달 가능한 인원 수 : " + Const.delivery + "명");
+        log.info("요리 가능한 인원 수 : " + EmployeeCapacity.getChef() + "명");
+        log.info("배달 가능한 인원 수 : " + EmployeeCapacity.getDelivery() + "명");
     }
 
     private void stockQuantityCheck(List<Menu> menuList) {

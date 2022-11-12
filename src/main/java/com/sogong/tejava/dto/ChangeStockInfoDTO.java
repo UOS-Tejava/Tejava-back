@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChangeStockInfoDTO {
 
-    private Long userId;
+    private Long employeeId;
     private Long stockItemId;
     private int quantity;
 }

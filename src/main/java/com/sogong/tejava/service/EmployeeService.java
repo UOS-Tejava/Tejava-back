@@ -81,8 +81,9 @@ public class EmployeeService {
     // 주문 상태 변경하기
     public void updateOrderStatus(HttpServletRequest request, ChangeOrderStatusDTO changeOrderStatusDTO) {
 
-        requestCheck(request, changeOrderStatusDTO.getUserId());
-        userRoleCheck(changeOrderStatusDTO.getUserId());
+        User user = getUserFromRequest(request);
+        requestCheck(request, changeOrderStatusDTO.getEmployeeId());
+        userRoleCheck(user.getId());
 
         Order order = orderRepository.findOrderById(changeOrderStatusDTO.getOrderId());
 
@@ -94,6 +95,7 @@ public class EmployeeService {
 
         // 요리 중으로 상태가 바뀌는 경우, 재고 현황에 반영할 것
         if (changeOrderStatusDTO.getOrderStatus().equals(OrderStatus.cooking.toString())) {
+
 
             List<StockItem> stockItems = stockRepository.findAll();
 
@@ -198,8 +200,9 @@ public class EmployeeService {
     // 재고 수량 수정하기
     public void changeStockInfo(HttpServletRequest request, ChangeStockInfoDTO changeStockInfoDTO) {
 
-        requestCheck(request, changeStockInfoDTO.getUserId());
-        userRoleCheck(changeStockInfoDTO.getUserId());
+        User user = getUserFromRequest(request);
+        requestCheck(request, changeStockInfoDTO.getEmployeeId());
+        userRoleCheck(user.getId());
 
         StockItem stockItem = stockRepository.getById(changeStockInfoDTO.getStockItemId());
         stockItem.setQuantity(changeStockInfoDTO.getQuantity());

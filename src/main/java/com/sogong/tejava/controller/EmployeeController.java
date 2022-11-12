@@ -47,7 +47,7 @@ public class EmployeeController {
 
     // 재고 수량 수정하기
     @PatchMapping("employee/stock-info")
-    @ApiOperation(value = "재고 수량 수정하기", notes = "요청자의 id, 재고의 id, 그리고 수량을 입력받아 갱신합니다.")
+    @ApiOperation(value = "재고 수량 수정하기", notes = "요청자(직원)의 id, 재고의 id, 그리고 수량을 입력받아 갱신합니다.")
     public ResponseEntity<?> changeStockInfo(HttpServletRequest request, @RequestBody ChangeStockInfoDTO changeStockInfoDTO) {
 
         employeeService.changeStockInfo(request, changeStockInfoDTO);

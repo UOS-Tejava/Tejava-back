@@ -1,6 +1,5 @@
 package com.sogong.tejava.dto;
 
-import com.sogong.tejava.entity.customer.ShoppingCart;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShoppingCartDTO {
+public class ChangeStockInfoDTO {
 
-    private Long userId;
-    private ShoppingCart shoppingCart;
+    private Long employeeId;
+    private Long stockItemId;
+    private int quantity;
 }

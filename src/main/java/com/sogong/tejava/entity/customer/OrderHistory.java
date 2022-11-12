@@ -23,11 +23,19 @@ public class OrderHistory extends BaseTimeEntity {
     private Long id;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "orderHistory")
+    @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.REMOVE)
     private List<Order> order = new ArrayList<>();
+
+    public static OrderHistory createOrderHistory(User user) {
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setOrder(null);
+        orderHistory.user = user;
+
+        return orderHistory;
+    }
 }

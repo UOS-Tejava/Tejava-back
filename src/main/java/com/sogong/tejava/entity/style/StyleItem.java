@@ -1,6 +1,5 @@
 package com.sogong.tejava.entity.style;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

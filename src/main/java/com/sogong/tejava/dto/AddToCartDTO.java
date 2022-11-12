@@ -1,6 +1,5 @@
 package com.sogong.tejava.dto;
 
-import com.sogong.tejava.entity.customer.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class AddToCartDTO {
 
     private Long userId;
-    private Menu menu;
+    private AddToCartMenuDTO menu;
 }

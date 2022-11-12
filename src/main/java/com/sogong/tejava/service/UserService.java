@@ -1,13 +1,14 @@
 package com.sogong.tejava.service;
 
+import com.sogong.tejava.dto.NotMemberDTO;
 import com.sogong.tejava.dto.RegisterDTO;
+import com.sogong.tejava.dto.UserDTO;
+import com.sogong.tejava.entity.Order;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.OrderHistory;
 import com.sogong.tejava.entity.customer.ShoppingCart;
 import com.sogong.tejava.entity.customer.User;
-import com.sogong.tejava.repository.OrderHistoryRepository;
-import com.sogong.tejava.repository.ShoppingCartRepository;
-import com.sogong.tejava.repository.UserRepository;
+import com.sogong.tejava.repository.*;
 import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.SessionConst;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,33 @@ import java.util.Objects;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ShoppingCartRepository shoppingCartRepository;
-
     private final OrderHistoryRepository orderHistoryRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final OrderRepository orderRepository;
 
-    // 회원 등록
-    public void registerUser(RegisterDTO registerDTO) {
+    // 회원을 위한 장바구니 테이블 생성
+    public void createCartTb(User user) {
+        ShoppingCart shoppingCart = ShoppingCart.createCart(user);
+        user.setShoppingCart(shoppingCart);
+        shoppingCartRepository.save(shoppingCart);
+    }
+
+    // 회원을 위한 주문테이블 생성
+    public void createOrderTb(User user) {
+        Order order = Order.createOrder(user);
+        orderRepository.save(order);
+    }
+
+    // 회원을 위한 주문 내역 테이블 생성
+    public void createOrderHistoryTb(User user) {
+
+        OrderHistory orderHistory = OrderHistory.createOrderHistory(user);
+        user.setOrderHistory(orderHistory);
+        orderHistoryRepository.save(orderHistory);
+    }
+
+    // 회원가입
+    public void registerUser(RegisterDTO registerDTO) { // TODO: 연락처 인증 관련해서 모든 개발 완료 이후 우선순위에 따라 추가해볼 것 using coolSMS
 
         if (!registerDTO.getPwd().equals(registerDTO.getMatchingPwd())) {
             throw new IllegalStateException("비밀번호가 서로 일치하지 않습니다.");
@@ -41,42 +63,40 @@ public class UserService {
             throw new IllegalStateException("이미 사용 중인 아이디가 있습니다.");
         }
 
-        // 회원가입 폼에서 입력받은 정보로 DTO 객체에 저장
         User user = new User();
+
+        if (registerDTO.getRegisterAsAdmin()) {
+            if (!registerDTO.getAdminVerificationCode().equals(Const.ADMIN_REGISTER_VERIFICATION_CODE)) {
+                throw new IllegalStateException("잘못된 인증코드입니다.");
+            }
+            user.setRole(Role.ADMINISTRATOR);
+        } else {
+            user.setRole(Role.USER);
+        }
+
+        // 회원가입 폼에서 입력받은 정보로 DTO 객체에 저장
         user.setUid(registerDTO.getUid());
         user.setPwd(passwordEncoder.encode(registerDTO.getPwd()));
         user.setName(registerDTO.getName());
         user.setAddress(registerDTO.getAddress());
         user.setPhoneNo(passwordEncoder.encode(registerDTO.getPhoneNo()));
-        user.setRole(Role.USER); // 기본값 : USER
-        // TODO: 관리자의 의 경우, Admin role 로 해서 workbench 를 통해 저장할 예정
-        // TODO: 연락처 인증 관련해서도 나중에 괜찮다면 작성해볼 것!
         user.setPhone_check(registerDTO.getPhoneCheck());
         user.setAgreement(registerDTO.getAgreement());
+        userRepository.save(user);
 
-        // 회원을 위한 장바구니 생성
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setUser(user);
-        shoppingCart.setTotal_price(0.0);
-        shoppingCart.setMenu(null);
-
-        // 회원을 위한 주문 내역 테이블 생성
-        OrderHistory orderHistory = new OrderHistory();
-        orderHistory.setOrder(null);
-        orderHistory.setUser(user);
-        user.setOrderHistory(orderHistory);
+        createCartTb(user);
+        createOrderHistoryTb(user);
+        createOrderTb(user);
 
         // DB에 저장
         userRepository.save(user);
-        orderHistoryRepository.save(orderHistory);
-        shoppingCartRepository.save(shoppingCart);
     }
 
     public boolean checkUidDuplicate(String uid) {
         return userRepository.existsByUid(uid);
     }
 
-    public User home(HttpServletRequest request) {
+    public Object home(HttpServletRequest request) {
         // 세션을 가져와 회원을 반환합니다. 반환된 회원이 없다면 비회원을 생성하여 반환
 
         HttpSession currentSession = request.getSession(false);
@@ -86,33 +106,44 @@ public class UserService {
             HttpSession notMemberSession = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession();
 
             User notMember = new User();
+            // 비회원 유저 세팅
+            notMember.setName("비회원");
+            notMember.setRole(Role.NOT_MEMBER);
+
+            userRepository.save(notMember);
 
             // 비회원을 위한 장바구니 생성
-            ShoppingCart shoppingCart = new ShoppingCart();
-            shoppingCart.setUser(notMember);
-            shoppingCart.setTotal_price(0.0);
-            shoppingCart.setMenu(null);
+            createCartTb(notMember);
+            createOrderHistoryTb(notMember);
+            createOrderTb(notMember);
 
-            // 비회원 유저 세팅
-            notMember.setShoppingCart(shoppingCart);
-            notMember.setRole(Role.NOT_MEMBER);
-            notMember.setName("비회원");
+            // 비회원 db에 저장
+            userRepository.save(notMember);
 
             // 세션에 비회원 정보 보관
             notMemberSession.setAttribute(SessionConst.NOT_MEMBER, notMember);
 
-            // 비회원 db에 저장
-            userRepository.save(notMember);
-            shoppingCartRepository.save(shoppingCart);
-
-            return notMember;
+            return NotMemberDTO.fromNotMember(notMember);
         }
 
-        return (User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER);
+        // 로그인 세션이 없다면 비회원 세션의 정보 반환
+        if (currentSession.getAttribute(SessionConst.LOGIN_MEMBER) != null) {
+            return UserDTO.from((User) currentSession.getAttribute(SessionConst.LOGIN_MEMBER));
+        } else {
+            return NotMemberDTO.fromNotMember((User) currentSession.getAttribute(SessionConst.NOT_MEMBER));
+        }
     }
 
-    public User login(String uid, String password, Boolean staySignedIn) { // TODO: 프론트 단에서 하는 게 맞는 지 -> bool 값은 사용할 게 없음
-        //TODO: 로그인 시, 관리자의 계정인 경우, 직원 인터페이스 화면으로 이동할 수 있게끔 할 것
+    public UserDTO login(HttpServletRequest request, String uid, String password, Boolean staySignedIn) { // TODO: bool 값은 사용하고 있지 않다는 거 체크할 것
+
+        // 홈화면 들어갈 시 생성되었던 세션 삭제 및 비회원 삭제
+        HttpSession currentSession = request.getSession(false);
+        if (currentSession != null) {
+            if (currentSession.getAttribute(SessionConst.NOT_MEMBER) != null) {
+                userRepository.delete((User) currentSession.getAttribute(SessionConst.NOT_MEMBER));
+            }
+            currentSession.invalidate();
+        }
 
         User loginMember = userRepository.findUserByUid(uid);
         log.info(String.valueOf(loginMember));
@@ -122,26 +153,28 @@ public class UserService {
             throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
         }
 
-        // 관리자/일반 유저 로그인 시, 비밀번호가 틀린 경우
-        if (loginMember.getRole().equals(Role.ADMINISTRATOR) && !loginMember.getPwd().equals(Const.TEST_PWD)) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
-        } else if (loginMember.getRole().equals(Role.USER)) {
-            if (loginMember.getUid().equals(Const.TEST_USER_UID)) {
-                if (!loginMember.getPwd().equals(Const.TEST_PWD)) {
+        // 관리자/일반 테스트/일반 유저 로그인
+        // TODO : 개발 완료되는 경우, 테스트 계정 삭제해야 함 (아이디 겹칠 수 있기 때문)
+        if (loginMember.getRole().equals(Role.ADMINISTRATOR)) { // 관리자의 경우
+            if (loginMember.getUid().equals(Const.TEST_ADMIN_UID)) { // 테스트 계정의 경우
+                if (!password.equals(Const.TEST_PWD)) {
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
                 }
-            } else {
-                if (!passwordEncoder.matches(password, loginMember.getPwd()))
+            } else { // 테스트 계정이 아닌 경우
+                if (!passwordEncoder.matches(password, loginMember.getPwd())) {
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+                }
             }
-        }
-
-        // TODO: 연락처 인증도 구현 시, phoneCheck 필드 값 확인할 것
-
-        // 홈화면 들어갈 시 생성되었던 세션 삭제
-        HttpSession notMemberSession = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession(false);
-        if (notMemberSession != null) {
-            notMemberSession.invalidate();
+        } else {
+            if (loginMember.getUid().equals(Const.TEST_USER_UID)) { // 일반 사용자의 경우
+                if (!password.equals(Const.TEST_PWD)) { // 테스트 계정의 경우
+                    throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+                }
+            } else { // 테스트 계정이 아닌 경우
+                if (!passwordEncoder.matches(password, loginMember.getPwd())) {
+                    throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
+                }
+            }
         }
 
         // 신규 세션 생성
@@ -153,6 +186,6 @@ public class UserService {
         log.info("기존의 세션 반환 및 혹은 세션을 생성하였습니다.");
         log.info("해당 세션 : " + session);
 
-        return loginMember;
+        return UserDTO.from(loginMember);
     }
 }

@@ -24,7 +24,7 @@ public class Style {
     private int price;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "menu_id")
     private Menu menu;
 }

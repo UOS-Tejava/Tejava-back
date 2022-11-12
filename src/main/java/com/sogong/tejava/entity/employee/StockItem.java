@@ -1,6 +1,5 @@
 package com.sogong.tejava.entity.employee;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +11,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name="stock_item")
-public class StockItem  extends BaseTimeEntity {
+@Table(name = "stock_item")
+public class StockItem extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

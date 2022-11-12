@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long> {
+    OrderHistory findByUserId(Long userId);
 }

@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CancelOrderDTO {
+public class ChangeMenuDetailResponseDTO {
 
-    private Long userId;
-    private Long orderId;
+    private double pre_price;
+    private double post_price;
 }

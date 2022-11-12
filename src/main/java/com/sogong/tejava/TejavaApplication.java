@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @EnableConfigurationProperties(ApplicationProperties.class)
 public class TejavaApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(TejavaApplication.class, args);
     }

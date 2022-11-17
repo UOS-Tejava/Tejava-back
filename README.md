@@ -1,4 +1,4 @@
-# 🍽️ Tejava (2022 UOS, Software Engineering course project)
+# 🍽️ Tejava (2022, Software Engineering course project)
 
 
 ![Java](https://img.shields.io/badge/Java-007396?style=flat-square&logo=Java&logoColor=white)

@@ -18,7 +18,7 @@ Accordingly, UOS-Tejava team has developed a suitable service. It provides order
 
 
 ## 🖥️ UI Design
-[Figma Link](http://www.google.co.kr](https://www.figma.com/file/8YPLCXj4B1yUX7FXvgCyKG/%EC%86%8C%EA%B3%B5-%EB%8D%B0%EC%9E%90%EC%99%80?node-id=0%3A1&t=WrwlcREh4TcUvzIH-1))
+[Figma Link](https://www.figma.com/file/8YPLCXj4B1yUX7FXvgCyKG/%EC%86%8C%EA%B3%B5-%EB%8D%B0%EC%9E%90%EC%99%80?node-id=0%3A1&t=WrwlcREh4TcUvzIH-1)
 
 
 ## 💎 Main Features

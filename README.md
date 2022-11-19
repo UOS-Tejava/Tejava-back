@@ -11,8 +11,8 @@ This is an application that provides food ordering service to its users.
 
 ## 📖 Explanation
 
-Garfield, the owner of Mr. DaeBak Restaurant, came to think that he wanted to run a restaurant online as well.   
-As a result, He wanted to outsource and create custom web pages.  
+Garfield, the owner of Mr. DaeBak restaurant, came to think that he wanted to run a restaurant online as well.   
+As a result, he wanted to outsource and create custom web pages.  
 
 Accordingly, UOS-Tejava team has developed a suitable service. It provides ordering and delivery services, and customer can freely modify options or menu styles after shopping or ordering. Customer can order menus by voice recognition and non-members can also use the service.
 

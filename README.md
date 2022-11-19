@@ -17,6 +17,10 @@ As a result, He wanted to outsource and create custom web pages.
 Accordingly, UOS-Tejava team has developed a suitable service. It provides ordering and delivery services, and customer can freely modify options or menu styles after shopping or ordering. Customer can order menus by voice recognition and non-members can also use the service.
 
 
+## 🖥️ UI Design
+[Figma Link](http://www.google.co.kr](https://www.figma.com/file/8YPLCXj4B1yUX7FXvgCyKG/%EC%86%8C%EA%B3%B5-%EB%8D%B0%EC%9E%90%EC%99%80?node-id=0%3A1&t=WrwlcREh4TcUvzIH-1))
+
+
 ## 💎 Main Features
 
 - HTTP REST API Server configured With Spring Boot Application.

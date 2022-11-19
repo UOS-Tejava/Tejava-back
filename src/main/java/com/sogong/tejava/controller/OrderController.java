@@ -49,7 +49,7 @@ public class OrderController {
     // 회원의 주문 내역 반환하기
     @GetMapping("/order/history")
     @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
-    public ResponseEntity<List<MenuDTO>> showOrderHistory(HttpServletRequest request) {
+    public ResponseEntity<List<OrderHistoryResponseDTO>> showOrderHistory(HttpServletRequest request) {
 
         return ResponseEntity.ok().body(orderService.showOrderHistory(request));
     }

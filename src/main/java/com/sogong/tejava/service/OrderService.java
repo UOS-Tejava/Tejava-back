@@ -77,6 +77,10 @@ public class OrderService {
         orderHistoryRepository.save(orderHistory);
         customer.setOrderHistory(orderHistory);
 
+        // 최신 정보로 고객의 정보 갱신 (이름, 주소)
+        customer.setName(orderDTO.getCustomerName());
+        customer.setAddress(orderDTO.getCustomerAddress());
+
         // 주문 횟수 1 증가하며 menu 에 orderId를 세팅하고, shoppingCartId는 null 로 초기화
         customer.setOrder_cnt(customer.getOrder_cnt() + 1);
 
@@ -212,22 +216,32 @@ public class OrderService {
     }
 
     // 고객의 주문 내역 보여주기
-    public List<MenuDTO> showOrderHistory(HttpServletRequest request) {
+    public List<OrderHistoryResponseDTO> showOrderHistory(HttpServletRequest request) {
 
         User user = getUserFromRequest(request);
 
         OrderHistory orderHistory = orderHistoryRepository.findByUserId(user.getId());
 
-        List<MenuDTO> menuDTOList = new ArrayList<>();
+        List<OrderHistoryResponseDTO> response = new ArrayList<>();
         for (Order order : orderRepository.findAllByOrderHistoryId(orderHistory.getId())) {
-            menuDTOList.addAll(order.getMenu().stream().map(MenuDTO::from).collect(Collectors.toList()));
+            List<OrderHistoryResponseDTO> menus = order.getMenu().stream().map(OrderHistoryResponseDTO::from).collect(Collectors.toList());
+            for (OrderHistoryResponseDTO menu : menus) {
+                // 주문 시, 주문자의 이름과 주소가 db에 즉각 반영되는 것을 확인하였으나, 여기서 user.getName(), user.getCustomerName()으로 가져올 경우, 세션을 통해 가져와서 db 반영 전 내용을 가져오는 것을 확인
+                // 이에 따라 db에 접근해서 직접가져오도록 함
+                menu.setCustomerName(userRepository.findUserByOrderHistoryId(orderHistory.getId()).getName());
+                menu.setCustomerAddress(userRepository.findUserByOrderHistoryId(orderHistory.getId()).getAddress());
+                menu.setOrderDateTime(orderRepository.findOrderByMenuId(menu.getMenuId()).getCreatedDate());
+                menu.setReq_orderDateTime(orderRepository.findOrderByMenuId(menu.getMenuId()).getReq_orderDateTime());
+
+                response.add(menu);
+            }
         }
 
         if (user.getRole().equals(Role.NOT_MEMBER)) {
             return null;
         }
 
-        return menuDTOList;
+        return response;
     }
 
     public List<MenuItemDTO> showAllMenus() {

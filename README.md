@@ -49,7 +49,7 @@ Make sure check if tejava-0.0.1-SNAPSHOT.jar file is in the ../build/libs direct
 
 <img width="1200" height="300" alt="스크린샷 2022-11-18 오전 1 25 48" src="https://user-images.githubusercontent.com/43805087/202501884-f24eaa65-e1ac-4e9e-b407-7e06620194ef.png">
 
-After connecting to the ec2 instance using the terminal, deploy the jar file in a way of Zero Downtime Deployment.
+After connecting to the ec2 instance using the terminal, deploy the jar file background.
 ```
 nohup java -jar tejava-0.0.1-SNAPSHOT.jar &
 ```

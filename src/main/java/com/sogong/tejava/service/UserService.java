@@ -200,8 +200,8 @@ public class UserService {
         // 세션에 회원 정보 보관 및 로그인 유지(staySignedIn = true)일 경우, 세션 유지 시간을 30분에서 1시간으로 늘림
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
 
-        if(staySignedIn) {
-            session.setMaxInactiveInterval(60*60);
+        if (staySignedIn) {
+            session.setMaxInactiveInterval(60 * 60);
         }
 
         log.info("기존의 세션 반환 및 혹은 세션을 생성하였습니다.");

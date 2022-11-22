@@ -27,6 +27,20 @@ import java.util.Objects;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
+
+    /*
+    1. 회원을 위한 장바구니 테이블 생성
+    2. 회원을 위한 주문테이블 생성
+    3. 회원을 위한 주문 내역 테이블 생성
+    4. 회원가입
+    5. 회원가입 시, 아이디 중복 확인
+    6. 홈화면
+    7. 로그인
+    (8. 요청으로부터 회원 객체 가져오기)
+    (9. 요리/배달 인원 수 체크)
+    (10. 재고 현황 체크)
+     */
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderHistoryRepository orderHistoryRepository;
@@ -55,7 +69,7 @@ public class UserService {
     }
 
     // 회원가입
-    public void registerUser(RegisterDTO registerDTO) { // TODO: 연락처 인증 관련해서 모든 개발 완료 이후 우선순위에 따라 추가해볼 것 using coolSMS
+    public void registerUser(RegisterDTO registerDTO) {
 
         if (!registerDTO.getPwd().equals(registerDTO.getMatchingPwd())) {
             throw new IllegalStateException("비밀번호가 서로 일치하지 않습니다.");
@@ -92,10 +106,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 회원가입 시, 아이디 중복 확인
     public boolean checkUidDuplicate(String uid) {
         return userRepository.existsByUid(uid);
     }
 
+    // 홈화면
     public Object home(HttpServletRequest request) {
         // 세션을 가져와 회원을 반환합니다. 반환된 회원이 없다면 비회원을 생성하여 반환
 
@@ -134,6 +150,7 @@ public class UserService {
         }
     }
 
+    // 로그인
     public UserDTO login(HttpServletRequest request, String uid, String password, Boolean staySignedIn) { // TODO: bool 값은 사용하고 있지 않다는 거 체크할 것
 
         // 홈화면 들어갈 시 생성되었던 세션 삭제 및 비회원 삭제
@@ -180,8 +197,12 @@ public class UserService {
         // 신규 세션 생성
         HttpSession session = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getSession();
 
-        // 세션에 회원 정보 보관
+        // 세션에 회원 정보 보관 및 로그인 유지(staySignedIn = true)일 경우, 세션 유지 시간을 30분에서 1시간으로 늘림
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+
+        if(staySignedIn) {
+            session.setMaxInactiveInterval(60*60);
+        }
 
         log.info("기존의 세션 반환 및 혹은 세션을 생성하였습니다.");
         log.info("해당 세션 : " + session);

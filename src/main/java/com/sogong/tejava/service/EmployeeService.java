@@ -31,6 +31,7 @@ public class EmployeeService {
     4. 재고 수량 수정하기
     (5. 현재 세션에 있는 유저의 권한과 파라미터로 받은 유저의 권한이 동일한 지 확인하기)
     (6. 관리자 권한이 있는 지 확인하기)
+    (7. 요청으로부터 회원 객체 반환하기)
      */
 
     private final StockRepository stockRepository;
@@ -226,6 +227,7 @@ public class EmployeeService {
         }
     }
 
+    // 요청으로부터 회원 객체 반환하기
     public User getUserFromRequest(HttpServletRequest request) {
         User loginMember = (User) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
         User notMember = (User) request.getSession(false).getAttribute(SessionConst.NOT_MEMBER);

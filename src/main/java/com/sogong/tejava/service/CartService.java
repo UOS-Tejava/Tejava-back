@@ -36,6 +36,8 @@ public class CartService {
     4. 카트에 담긴 거 아이템 한 개 삭제
     (5. 유저 권한인 지 체크하기)
     (6. 메뉴가 기존 메뉴와 동일(옵션/스타일)한 지 체크하기)
+    (7. 요청으로부터 회원 객체 반환하기)
+    (8. 재고현황 체크)
      */
 
     // 카트에 담긴 메뉴 보여주기
@@ -246,6 +248,7 @@ public class CartService {
         return null;
     }
 
+    // 요청으로부터 회원 객체 반환하기
     public User getUserFromRequest(HttpServletRequest request) {
         User loginMember = (User) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
         User notMember = (User) request.getSession(false).getAttribute(SessionConst.NOT_MEMBER);
@@ -257,6 +260,7 @@ public class CartService {
         }
     }
 
+    // 재고현황 체크
     private void stockQuantityCheck(List<Menu> menuList) {
 
         List<StockItem> stockItems = stockRepository.findAll();

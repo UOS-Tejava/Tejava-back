@@ -24,8 +24,8 @@ public class LoginController {
     }
 
     @PostMapping("/")
-    @Operation(description = "홈 화면입니다. 세션이 없다면 생성 이후, 비회원을 세션에 저장합니다.")
-    @ApiResponse(responseCode = "200", description = "세션을 가져와 (비)회원을 반환합니다. 비회원의 경우, 주소와 주문횟수는 null 값이 들어갑니다.", content = @Content(schema = @Schema(implementation = UserDTO.class)))
+    @ApiOperation(value = "홈화면", notes = "홈 화면입니다. 세션이 없다면 생성 이후, 비회원을 세션에 저장합니다.")
+    @ApiResponse(responseCode = "200", description = "세션을 가져와 (비)회원을 반환합니다. 비회원의 경우, 주소(address)와 주문횟수(order_cnt)는 null 값이 들어갑니다.", content = @Content(schema = @Schema(implementation = UserDTO.class)))
     public ResponseEntity<?> home(HttpServletRequest request) {
         return ResponseEntity.ok().body(userService.home(request));
     }

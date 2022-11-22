@@ -27,16 +27,21 @@ public class OrderService {
 
     /*
     1. 주문하기
-    2. 주문한 내역에서 옵션이나 스타일 수정 (접수 대기 중에서만 가능)
-    3. 주문한 내역에서 주문 취소 (접수 대기 중에서만 가능, 부가적 기능)
-    4. 주문 내역 보여주기
+    2. 주문한 내역에서 주문 취소 (접수 대기 중에서만 가능, 부가적 기능)
+    3. 주문 내역 보여주기
+    4. 모든 메뉴 보여주기
+    5. 특정 메뉴의 적용 가능한 옵션 보여주기
+    6. 특정 메뉴의 적용 가능한 스타일 보여주기
+    (7. 권한 체크 (주문은 일반 회원만 사용할 수 있는 기능))
+    (8. 요청으로부터 회원 객체 가져오기)
+    (9. 요리/배달 인원 수 체크)
+    (10. 재고 현황 체크)
      */
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final OrderHistoryRepository orderHistoryRepository;
     private final MenuRepository menuRepository;
-    private final StyleRepository styleRepository;
     private final OptionsRepository optionsRepository;
     private final ShoppingCartRepository shoppingCartRepository;
     private final MenuItemRepository menuItemRepository;
@@ -108,86 +113,6 @@ public class OrderService {
         return orderResponseDTO;
     }
 
-    @Transactional
-    // TODO : 주문 이후 메뉴 디테일 수정시, 가격의 일부분 환불 혹은 추가 결제가 필요하기에 주문 이후에 수정할 수 있도록 할 것인지 의논해볼 것!
-    // TODO : 금액이 늘어났다면 초과된 가격을 결제하도록 결제화면으로 이동하면 되는 데, 일부 반환을 해야하는 경우, 어떻게 줄 건지! (ex. point or 변경 전후의 가격을 반환하니 판단해서 늘어났으면 결제화면, 줄어들었다면 입금 화면으로 이동할 것)
-    // 주문 이후 접수 대기 중인 상태일 때, 메뉴 디테일(옵션/스타일) 수정하기
-    public ChangeMenuDetailResponseDTO updateMenuDetail(ChangeMenuDetailDTO changeMenuDetailDTO) {
-
-        User customer = userRepository.findUserById(changeMenuDetailDTO.getUserId());
-        userRoleCheck(changeMenuDetailDTO.getUserId());
-
-        Order order = orderRepository.findOrderById(changeMenuDetailDTO.getOrderId());
-        double totalPrice = 0.0;
-        for (Menu menu : menuRepository.findAllByOrderId(order.getId())) {
-            totalPrice += menu.getPrice();
-        }
-
-        if (!order.getOrder_status().equals(OrderStatus.pending.toString())) {
-            throw new IllegalStateException("주문이 이미 접수되어 수정 불가합니다.");
-        }
-
-        ChangeMenuDetailResponseDTO changeMenuDetailResponseDTO = new ChangeMenuDetailResponseDTO();
-
-        // 수정될 메뉴를 가져와 옵션/스타일 초기화하면서 totalPrice 도 차감
-        Menu menu = menuRepository.getMenuById(changeMenuDetailDTO.getMenuId()); // 수정할 메뉴를 가져옴
-
-        optionsRepository.deleteAllByMenuId(menu.getId());
-        styleRepository.deleteByMenuId(menu.getId());
-        menuRepository.save(menu);
-
-        OrderHistory orderHistory = customer.getOrderHistory();
-
-        // 새로운 옵션 리스트 생성
-        List<Options> newOptions = new ArrayList<>();
-
-
-        for (OptionsDTO optionsDTO : changeMenuDetailDTO.getNewOptions()) {
-            Options option = new Options();
-            option.setOption_nm(optionsDTO.getOption_nm());
-            option.setOption_pic(optionsDTO.getOption_pic());
-            option.setQuantity(optionsDTO.getQuantity());
-            option.setPrice(optionsDTO.getPrice());
-            option.setMenu(menu);
-
-            newOptions.add(option);
-            totalPrice += (optionsDTO.getPrice() * optionsDTO.getQuantity() * menu.getQuantity());
-        }
-        optionsRepository.saveAll(newOptions);
-
-        // 새로운 스타일 생성
-        Style style = new Style();
-        style.setStyle_nm(changeMenuDetailDTO.getNewStyle().getStyle_nm());
-        style.setStyle_pic(changeMenuDetailDTO.getNewStyle().getStyle_pic());
-        style.setStyle_config(changeMenuDetailDTO.getNewStyle().getStyle_config());
-        style.setPrice(changeMenuDetailDTO.getNewStyle().getPrice());
-        style.setMenu(menu);
-        totalPrice += (changeMenuDetailDTO.getNewStyle().getPrice() * menu.getQuantity());
-        styleRepository.save(style);
-
-        // 새로 생성한 메뉴에 새로운 옵션/스타일 반영
-        menu.setOptions(newOptions);
-        menu.setStyle(style);
-        menuRepository.save(menu);
-
-        stockQuantityCheck(List.of(menu));
-
-        // 반환할 dto 의 정보 세팅
-        changeMenuDetailResponseDTO.setPre_price(order.getTotal_price());
-        changeMenuDetailResponseDTO.setPost_price(totalPrice);
-
-        // 주문의 수정사항 저장
-        order.setTotal_price(totalPrice);
-        order.setMenu(menuRepository.findAllByOrderId(order.getId()));
-        order.setOrderHistory(orderHistory);
-
-        // db에 갱신
-        orderRepository.save(order);
-        orderHistoryRepository.save(orderHistory);
-
-        return changeMenuDetailResponseDTO;
-    }
-
     // 주문한 내역에서 주문 취소
     @Transactional
     public void cancelOrder(HttpServletRequest request, Long orderId) {
@@ -244,10 +169,12 @@ public class OrderService {
         return response;
     }
 
+    // 모든 메뉴 보여주기
     public List<MenuItemDTO> showAllMenus() {
         return menuItemRepository.findAll().stream().map(MenuItemDTO::from).collect(Collectors.toList());
     }
 
+    // 특정 메뉴의 적용 가능한 옵션 보여주기
     public List<OptionsDTO> showAllOptions(Long menuId) {
         List<OptionsItem> array = optionsItemRepository.findAll();
         List<OptionsItem> optionsList = new ArrayList<>();
@@ -262,6 +189,7 @@ public class OrderService {
         return optionsList.stream().map(OptionsDTO::from).collect(Collectors.toList());
     }
 
+    // 특정 메뉴의 적용 가능한 스타일 보여주기
     public List<StyleDTO> showAllStyles(Long menuId) {
         List<StyleItem> styleList = styleItemRepository.findAll();
 
@@ -273,6 +201,7 @@ public class OrderService {
         return styleList.stream().map(StyleDTO::from).collect(Collectors.toList());
     }
 
+    // 권한 체크 (주문은 일반 회원만 사용할 수 있는 기능)
     public void userRoleCheck(Long userId) {
         User user = userRepository.findUserById(userId);
 
@@ -281,6 +210,7 @@ public class OrderService {
         }
     }
 
+    // 요청으로부터 회원 객체 가져오기
     public User getUserFromRequest(HttpServletRequest request) {
         User loginMember = (User) request.getSession(false).getAttribute(SessionConst.LOGIN_MEMBER);
         User notMember = (User) request.getSession(false).getAttribute(SessionConst.NOT_MEMBER);
@@ -292,6 +222,7 @@ public class OrderService {
         }
     }
 
+    // 요리/배달 인원 수 체크
     public void employeeCheck() {
         if (EmployeeCapacity.getChef() <= 0) {
             throw new IllegalStateException("현재 요리 가능한 인원이 없어 잠시만 기다려주시면 감사하겠습니다.");
@@ -303,6 +234,7 @@ public class OrderService {
         log.info("배달 가능한 인원 수 : " + EmployeeCapacity.getDelivery() + "명");
     }
 
+    // 재고 현황 체크
     private void stockQuantityCheck(List<Menu> menuList) {
 
         List<StockItem> stockItems = stockRepository.findAll();

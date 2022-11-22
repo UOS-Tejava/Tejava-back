@@ -19,15 +19,6 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 메뉴 아이템의 옵션/스타일(menu detail) 수정하기
-    @PatchMapping("/order/update/menu-detail")
-    @ApiOperation(value = "주문 이후에 메뉴의 옵션/스타일 수정", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능합니다.")
-    public ResponseEntity<ChangeMenuDetailResponseDTO> updateMenuOptions(@RequestBody ChangeMenuDetailDTO changeMenuDetailDTO) {
-
-        ChangeMenuDetailResponseDTO changeMenuDetailResponseDTO = orderService.updateMenuDetail(changeMenuDetailDTO);
-        return ResponseEntity.ok().body(changeMenuDetailResponseDTO);
-    }
-
     // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 결제 취소하기 -> 주문내역에서도 삭제!
     @DeleteMapping("/order/cancel/orderId/{orderId}")
     @ApiOperation(value = "주문 이후에 결제 취소하기", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능하며, 비회원이 아니라면 주문 횟수가 1 줄어듭니다.")

@@ -2,6 +2,7 @@ package com.sogong.tejava.dto;
 
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@Schema
 public class UserDTO {
 
     private Long id;

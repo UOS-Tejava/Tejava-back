@@ -151,7 +151,7 @@ public class UserService {
     }
 
     // 로그인
-    public UserDTO login(HttpServletRequest request, String uid, String password, Boolean staySignedIn) { // TODO: bool 값은 사용하고 있지 않다는 거 체크할 것
+    public UserDTO login(HttpServletRequest request, String uid, String password, Boolean staySignedIn) {
 
         // 홈화면 들어갈 시 생성되었던 세션 삭제 및 비회원 삭제
         HttpSession currentSession = request.getSession(false);

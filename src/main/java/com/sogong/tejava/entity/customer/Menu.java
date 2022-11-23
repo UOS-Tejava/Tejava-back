@@ -23,7 +23,7 @@ public class Menu {
     private String menu_nm;
     private String menu_config;
     private String menu_pic;
-    private int price;
+    private int price; // 옵션/스타일을 포함한 가격, 프론트에서 가격을 계산하기로 되어있음
     private int quantity;
 
     @JsonIgnore

@@ -123,15 +123,26 @@ public class CartService {
 
     @Transactional
     // 카트의 메뉴 디테일(옵션/스타일) 수정하기
-    public void updateMenuDetail(ChangeMenuDetailDTO changeMenuDetailDTO) {
+    public MenuDTO updateMenuDetail(ChangeMenuDetailDTO changeMenuDetailDTO) {
 
         User customer = userRepository.findUserById(changeMenuDetailDTO.getUserId());
         userRoleCheck(changeMenuDetailDTO.getUserId());
 
         ShoppingCart shoppingCart = customer.getShoppingCart();
 
-        // 수정될 메뉴를 가져와 옵션/스타일 초기화
+        // 수정될 메뉴를 가져와 옵션/스타일의 가격을 메뉴의 가격에서 차감하면서 초기화
         Menu menu = menuRepository.getMenuById(changeMenuDetailDTO.getMenuId()); // 수정할 메뉴를 가져옴
+        int price = menu.getPrice();
+
+        for (Options option : optionsRepository.findAllByMenuId(menu.getId())) {
+            price -= option.getPrice() * option.getQuantity() * menu.getQuantity();
+            optionsRepository.delete(option);
+        }
+
+        Style oldStyle = styleRepository.findStyleByMenuId(menu.getId());
+        price -= oldStyle.getPrice() * menu.getQuantity();
+        styleRepository.delete(oldStyle);
+
         optionsRepository.deleteAllByMenuId(menu.getId());
         styleRepository.deleteByMenuId(menu.getId());
         menuRepository.save(menu);
@@ -150,6 +161,7 @@ public class CartService {
             option.setMenu(menu);
 
             newOptions.add(option);
+            price += option.getPrice() * option.getQuantity() * menu.getQuantity();
         }
         optionsRepository.saveAll(newOptions);
 
@@ -160,11 +172,14 @@ public class CartService {
         style.setStyle_config(changeMenuDetailDTO.getNewStyle().getStyle_config());
         style.setPrice(changeMenuDetailDTO.getNewStyle().getPrice());
         style.setMenu(menu);
+
+        price += style.getPrice();
         styleRepository.save(style);
 
-        // 새로 생성한 메뉴에 새로운 옵션/스타일 반영
+        // 새로 생성한 메뉴에 새로운 옵션/스타일, 가격 반영
         menu.setOptions(newOptions);
         menu.setStyle(style);
+        menu.setPrice(price);
 
         // 중복 체크
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
@@ -187,6 +202,8 @@ public class CartService {
 
         // 카트에도 메뉴 추가 후 db에 갱신
         shoppingCartRepository.save(shoppingCart);
+
+        return MenuDTO.from(menu);
     }
 
     // 카트의 메뉴 아이템 하나 삭제하기

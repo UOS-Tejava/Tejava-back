@@ -39,10 +39,9 @@ public class ShoppingCartController {
     // 카트에 담긴 메뉴 아이템의 옵션/스타일(menu detail) 수정하기
     @PatchMapping("/cart/update/menu-detail")
     @ApiOperation(value = "장바구니의 메뉴 옵션/스타일 수정하기", notes = "장바구니 목록에서 아이템을 선택하여 옵션/스타일을 수정합니다.\n여기선 orderId의 값을 주지 않아도 됩니다.")
-    public ResponseEntity<?> updateMenuDetail(@RequestBody ChangeMenuDetailDTO changeMenuDetailDTO) {
+    public ResponseEntity<MenuDTO> updateMenuDetail(@RequestBody ChangeMenuDetailDTO changeMenuDetailDTO) {
 
-        cartService.updateMenuDetail(changeMenuDetailDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(cartService.updateMenuDetail(changeMenuDetailDTO));
     }
 
     // 카트의 메뉴 아이템 한 개 삭제하기

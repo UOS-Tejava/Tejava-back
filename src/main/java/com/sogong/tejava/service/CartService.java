@@ -185,6 +185,8 @@ public class CartService {
         // 중복 체크
         List<Menu> menuList = menuRepository.findAllByShoppingCartId(shoppingCart.getId());
 
+        stockQuantityCheck(menuList);
+
         log.info("모든 메뉴 리스트 : " + menuList);
 
         if (findMenuDuplicate(menu, menuList) != null) { // 중복되는 메뉴라면

@@ -9,6 +9,7 @@ import com.sogong.tejava.entity.customer.Options;
 import com.sogong.tejava.entity.customer.User;
 import com.sogong.tejava.entity.employee.StockItem;
 import com.sogong.tejava.repository.*;
+import com.sogong.tejava.util.Const;
 import com.sogong.tejava.util.EmployeeCapacity;
 import com.sogong.tejava.util.SessionConst;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +107,7 @@ public class EmployeeService {
             StockItem salad = stockItems.get(3);
             StockItem bread = stockItems.get(5);
             StockItem champagne = stockItems.get(1);
+            StockItem baguette = stockItems.get(6);
 
             // 재고 현황에 반영
             for (Menu menu : order.getMenu()) {
@@ -136,11 +138,16 @@ public class EmployeeService {
                             salad.setQuantity(salad.getQuantity() - option.getQuantity());
                             break;
                         case "빵":
-                        case "바게트 빵":
                             if (bread.getQuantity() < option.getQuantity()) {
                                 throw new IllegalStateException("빵의 재고가 부족합니다.");
                             }
-                            bread.setQuantity(bread.getQuantity() - option.getQuantity());
+                            bread.setQuantity(bread.getQuantity() - Const.BREAD_OPTION_QUANTITY * option.getQuantity());
+                            break;
+                        case "바게트 빵":
+                            if (baguette.getQuantity() < option.getQuantity()) {
+                                throw new IllegalStateException("바게트 빵의 재고가 부족합니다.");
+                            }
+                            bread.setQuantity(baguette.getQuantity() - Const.BAGUETTE_OPTION_QUANTITY * option.getQuantity());
                             break;
                         case "샴페인 한 병":
                             if (champagne.getQuantity() < option.getQuantity()) {
@@ -158,6 +165,7 @@ public class EmployeeService {
             stockRepository.save(salad);
             stockRepository.save(bread);
             stockRepository.save(champagne);
+            stockRepository.save(baguette);
 
             if (EmployeeCapacity.getChef() >= 1) {
                 EmployeeCapacity.decreaseChef();

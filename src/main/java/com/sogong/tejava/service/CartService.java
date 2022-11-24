@@ -290,6 +290,8 @@ public class CartService {
         StockItem salad = stockItems.get(3);
         StockItem bread = stockItems.get(5);
         StockItem champagne = stockItems.get(1);
+        StockItem baguette = stockItems.get(6);
+
 
         for (Menu menu : menuList) {
             for (Options option : menu.getOptions()) {
@@ -315,10 +317,14 @@ public class CartService {
                             throw new IllegalStateException("샐러드의 재고가 부족합니다.");
                         }
                     case "빵":
-                    case "바게트 빵":
                         if (option.getQuantity() > bread.getQuantity()) {
                             optionsRepository.delete(option);
                             throw new IllegalStateException("빵의 재고가 부족합니다.");
+                        }
+                    case "바게트 빵":
+                        if (option.getQuantity() > baguette.getQuantity()) {
+                            optionsRepository.delete(option);
+                            throw new IllegalStateException("바게트 빵의 재고가 부족합니다.");
                         }
                     case "샴페인 한 병":
                         if (option.getQuantity() > champagne.getQuantity()) {

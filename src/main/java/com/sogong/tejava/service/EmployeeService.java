@@ -49,7 +49,7 @@ public class EmployeeService {
     }
 
     // 들어온 모든 주문 조회
-    public List<GetOrderListResponseDTO> getOrderList(HttpServletRequest request) {
+    public GetOrderListResponseDTO getOrderList(HttpServletRequest request) {
 
         User user = getUserFromRequest(request);
 
@@ -59,10 +59,10 @@ public class EmployeeService {
         User customer = userRepository.findUserById(user.getId());
         List<Order> orders = orderRepository.findAll();
 
-        List<GetOrderListResponseDTO> result = new ArrayList<>();
+        List<GetOrderListResponseItemDTO> result = new ArrayList<>();
 
         for (Order order : orders) {
-            GetOrderListResponseDTO responseDTO = new GetOrderListResponseDTO();
+            GetOrderListResponseItemDTO responseDTO = new GetOrderListResponseItemDTO();
 
             responseDTO.setOrderId(order.getId());
             responseDTO.setOrderedDate(order.getCreatedDate());
@@ -77,7 +77,12 @@ public class EmployeeService {
             result.add(responseDTO);
         }
 
-        return result;
+        GetOrderListResponseDTO responseDTO = new GetOrderListResponseDTO();
+        responseDTO.setOrderList(result);
+        responseDTO.setChef(EmployeeCapacity.getChef());
+        responseDTO.setDelivery(EmployeeCapacity.getDelivery());
+
+        return responseDTO;
     }
 
     // 주문 상태 변경하기

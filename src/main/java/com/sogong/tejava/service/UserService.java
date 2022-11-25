@@ -3,7 +3,6 @@ package com.sogong.tejava.service;
 import com.sogong.tejava.dto.NotMemberDTO;
 import com.sogong.tejava.dto.RegisterDTO;
 import com.sogong.tejava.dto.UserDTO;
-import com.sogong.tejava.entity.Order;
 import com.sogong.tejava.entity.Role;
 import com.sogong.tejava.entity.customer.OrderHistory;
 import com.sogong.tejava.entity.customer.ShoppingCart;
@@ -30,34 +29,26 @@ public class UserService {
 
     /*
     1. 회원을 위한 장바구니 테이블 생성
-    2. 회원을 위한 주문테이블 생성
-    3. 회원을 위한 주문 내역 테이블 생성
-    4. 회원가입
-    5. 회원가입 시, 아이디 중복 확인
-    6. 홈화면
-    7. 로그인
-    (8. 요청으로부터 회원 객체 가져오기)
-    (9. 요리/배달 인원 수 체크)
-    (10. 재고 현황 체크)
+    2. 회원을 위한 주문 내역 테이블 생성
+    3. 회원가입
+    4. 회원가입 시, 아이디 중복 확인
+    5. 홈화면
+    6. 로그인
+    (7. 요청으로부터 회원 객체 가져오기)
+    (8. 요리/배달 인원 수 체크)
+    (9. 재고 현황 체크)
      */
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderHistoryRepository orderHistoryRepository;
     private final ShoppingCartRepository shoppingCartRepository;
-    private final OrderRepository orderRepository;
 
     // 회원을 위한 장바구니 테이블 생성
     public void createCartTb(User user) {
         ShoppingCart shoppingCart = ShoppingCart.createCart(user);
         user.setShoppingCart(shoppingCart);
         shoppingCartRepository.save(shoppingCart);
-    }
-
-    // 회원을 위한 주문테이블 생성
-    public void createOrderTb(User user) {
-        Order order = Order.createOrder(user);
-        orderRepository.save(order);
     }
 
     // 회원을 위한 주문 내역 테이블 생성
@@ -100,7 +91,6 @@ public class UserService {
 
         createCartTb(user);
         createOrderHistoryTb(user);
-        createOrderTb(user);
 
         // DB에 저장
         userRepository.save(user);
@@ -131,7 +121,6 @@ public class UserService {
             // 비회원을 위한 장바구니 생성
             createCartTb(notMember);
             createOrderHistoryTb(notMember);
-            createOrderTb(notMember);
 
             // 비회원 db에 저장
             userRepository.save(notMember);

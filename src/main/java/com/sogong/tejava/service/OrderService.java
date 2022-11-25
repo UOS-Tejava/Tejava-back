@@ -37,6 +37,7 @@ public class OrderService {
     (9. 요리/배달 인원 수 체크)
     (10. 재고 현황 체크)
     11. 고객의 주문 내역을 주문 리스트로 반환하기
+    (12. 회원을 위한 주문테이블 생성)
      */
 
     private final OrderRepository orderRepository;
@@ -59,7 +60,7 @@ public class OrderService {
         User customer = userRepository.findUserById(orderDTO.getUserId());
         userRoleCheck(orderDTO.getUserId());
 
-        Order order = new Order();
+        Order order = createOrderTb(customer);
         orderRepository.save(order);
 
         OrderHistory orderHistory = orderHistoryRepository.findByUserId(orderDTO.getUserId());
@@ -318,5 +319,13 @@ public class OrderService {
         }
 
         return response;
+    }
+
+    // 회원을 위한 주문테이블 생성
+    public Order createOrderTb(User user) {
+        Order order = Order.createOrder(user);
+        orderRepository.save(order);
+
+        return order;
     }
 }

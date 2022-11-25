@@ -21,10 +21,9 @@ public class EmployeeController {
     // 주문 현황 보여주기
     @GetMapping("/employee/orders")
     @ApiOperation(value = "주문 현황 조회하기", notes = "직원 인터페이스의 홈화면에서 접수된 주문 목록을 확인할 수 있습니다.")
-    public ResponseEntity<List<GetOrderListResponseDTO>> showOrders(HttpServletRequest request) {
+    public ResponseEntity<GetOrderListResponseDTO> showOrders(HttpServletRequest request) {
 
-        List<GetOrderListResponseDTO> orderList = employeeService.getOrderList(request);
-        return ResponseEntity.ok().body(orderList);
+        return ResponseEntity.ok().body(employeeService.getOrderList(request));
     }
 
     // 주문 상태 바꾸기 (pending, cooking, delivering, completed)

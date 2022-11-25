@@ -11,12 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GetOrderListResponseDTO {
 
-    private Long orderId;
-    private String orderedDate; // 주문이 이루어진 시간
-    private String customerName;
-    private String customerAddress;
-    private List<MenuDTO> menuDTOList;
-    private double totalPrice;
-    private String req_orderDateTime; // 고객이 요청하는 주문 시간
-    private String orderStatus;
+    private List<GetOrderListResponseItemDTO> orderList;
+    private int chef;
+    private int delivery;
 }

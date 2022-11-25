@@ -39,10 +39,10 @@ public class OrderController {
 
     // 회원의 주문 내역 반환하기
     @GetMapping("/order/history")
-    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
-    public ResponseEntity<List<OrderHistoryResponseDTO>> showOrderHistory(HttpServletRequest request) {
+    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 메뉴 리스트로 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
+    public ResponseEntity<List<OrderHistoryResponseMenuDTO>> showOrderHistoryWithMenus(HttpServletRequest request) {
 
-        return ResponseEntity.ok().body(orderService.showOrderHistory(request));
+        return ResponseEntity.ok().body(orderService.showOrderHistoryWithMenus(request));
     }
 
     @GetMapping("/order/showAllMenus")
@@ -67,5 +67,12 @@ public class OrderController {
 
         List<StyleDTO> styleList = orderService.showAllStyles(menuId);
         return ResponseEntity.ok().body(styleList);
+    }
+
+    @GetMapping("/order/history/orders")
+    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 주문 리스트로 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
+    public ResponseEntity<List<OrderHistoryDTO>> showOrderHistory(HttpServletRequest request) {
+
+        return ResponseEntity.ok().body(orderService.showOrderHistoryWithOrders(request));
     }
 }

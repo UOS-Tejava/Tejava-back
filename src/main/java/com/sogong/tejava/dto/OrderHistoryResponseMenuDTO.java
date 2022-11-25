@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-public class OrderHistoryResponseDTO {
+public class OrderHistoryResponseMenuDTO {
 
     private Long menuId;
     private String menu_nm;
@@ -29,12 +29,12 @@ public class OrderHistoryResponseDTO {
     private String req_orderDateTime;
 
 
-    public static OrderHistoryResponseDTO from(Menu menu) {
+    public static OrderHistoryResponseMenuDTO from(Menu menu) {
 
         List<OptionsDTO> optionsDTOList = menu.getOptions().stream().map(OptionsDTO::from).collect(Collectors.toList());
         StyleDTO styleDTO = StyleDTO.from(menu);
 
-        return OrderHistoryResponseDTO.builder()
+        return OrderHistoryResponseMenuDTO.builder()
                 .menuId(menu.getId()) // order 테이블에서 주문 상태에 접근을 위해 필요함
                 .menu_config(menu.getMenu_config())
                 .menu_nm(menu.getMenu_nm())

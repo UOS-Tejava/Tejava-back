@@ -25,6 +25,7 @@ public class Order extends BaseTimeEntity {
     private double total_price;
     private String order_status;
     private String req_orderDateTime;
+    private String customer_address;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,6 +1,5 @@
 package com.sogong.tejava.dto;
 
-import com.sogong.tejava.entity.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

@@ -28,7 +28,7 @@ public class OrderService {
     /*
     1. 주문하기
     2. 주문한 내역에서 주문 취소 (접수 대기 중에서만 가능, 부가적 기능)
-    3. 주문 내역 보여주기
+    3. 고객의 주문 내역을 메뉴 리스트로 반환하기
     4. 모든 메뉴 보여주기
     5. 특정 메뉴의 적용 가능한 옵션 보여주기
     6. 특정 메뉴의 적용 가능한 스타일 보여주기
@@ -36,6 +36,7 @@ public class OrderService {
     (8. 요청으로부터 회원 객체 가져오기)
     (9. 요리/배달 인원 수 체크)
     (10. 재고 현황 체크)
+    11. 고객의 주문 내역을 주문 리스트로 반환하기
      */
 
     private final OrderRepository orderRepository;
@@ -71,6 +72,7 @@ public class OrderService {
 
         // 주문 테이블에 order 객체 저장
         order.setTotal_price(orderDTO.getTotal_price());
+        order.setCustomer_address(orderDTO.getCustomerAddress());
         order.setMenu(menuList);
         order.setOrderHistory(orderHistory);
         order.setOrder_status(OrderStatus.pending.toString());
@@ -140,17 +142,17 @@ public class OrderService {
         }
     }
 
-    // 고객의 주문 내역 보여주기
-    public List<OrderHistoryResponseDTO> showOrderHistory(HttpServletRequest request) {
+    // 고객의 주문 내역을 메뉴 리스트로 보여주기
+    public List<OrderHistoryResponseMenuDTO> showOrderHistoryWithMenus(HttpServletRequest request) {
 
         User user = getUserFromRequest(request);
 
         OrderHistory orderHistory = orderHistoryRepository.findByUserId(user.getId());
 
-        List<OrderHistoryResponseDTO> response = new ArrayList<>();
+        List<OrderHistoryResponseMenuDTO> response = new ArrayList<>();
         for (Order order : orderRepository.findAllByOrderHistoryId(orderHistory.getId())) {
-            List<OrderHistoryResponseDTO> menus = order.getMenu().stream().map(OrderHistoryResponseDTO::from).collect(Collectors.toList());
-            for (OrderHistoryResponseDTO menu : menus) {
+            List<OrderHistoryResponseMenuDTO> menus = order.getMenu().stream().map(OrderHistoryResponseMenuDTO::from).collect(Collectors.toList());
+            for (OrderHistoryResponseMenuDTO menu : menus) {
                 // 주문 시, 주문자의 이름과 주소가 db에 즉각 반영되는 것을 확인하였으나, 여기서 user.getName(), user.getCustomerName()으로 가져올 경우, 세션을 통해 가져와서 db 반영 전 내용을 가져오는 것을 확인
                 // 이에 따라 db에 접근해서 직접가져오도록 함
                 menu.setCustomerName(userRepository.findUserByOrderHistoryId(orderHistory.getId()).getName());
@@ -283,5 +285,38 @@ public class OrderService {
                 }
             }
         }
+    }
+
+    // 고객의 주문 내역을 주문 리스트로 반환
+    public List<OrderHistoryDTO> showOrderHistoryWithOrders(HttpServletRequest request) {
+
+        // orderHistoryId로 order 테이블을 가져와 order_table id를 가져와 이를 활용하여 menu 테이블에서 menu를 가져와 dto로 변경 후 orderHistory에 담는다. → 리스트로 변환
+        User user = getUserFromRequest(request);
+
+        OrderHistory orderHistory = orderHistoryRepository.findByUserId(user.getId());
+        List<Order> orderList = orderRepository.findAllByOrderHistoryId(orderHistory.getId());
+        log.info("orderList : " + orderList);
+
+        List<OrderHistoryDTO> response = new ArrayList<>();
+
+
+        for (Order order : orderList) {
+
+            List<MenuDTO> menus = new ArrayList<>();
+
+            OrderHistoryDTO orderHistoryDTO = OrderHistoryDTO.from(order);
+            orderHistoryDTO.setCustomerName(user.getName()); // 불변
+            orderHistoryDTO.setCustomerAddress(order.getCustomer_address()); // 주소는 바뀔 수 있음
+
+            for (Menu menu : menuRepository.findAllByOrderId(order.getId())) {
+                menus.add(MenuDTO.from(menu));
+            }
+
+            orderHistoryDTO.setMenus(menus);
+
+            response.add(orderHistoryDTO);
+        }
+
+        return response;
     }
 }

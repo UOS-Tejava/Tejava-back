@@ -1,7 +1,7 @@
 package com.sogong.tejava.entity.customer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sogong.tejava.converter.RoleConverter;
+import com.sogong.tejava.validate.config.converter.RoleConverter;
 import com.sogong.tejava.entity.BaseTimeEntity;
 import com.sogong.tejava.entity.Role;
 import lombok.*;

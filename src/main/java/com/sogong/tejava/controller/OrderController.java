@@ -1,7 +1,7 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.*;
-import com.sogong.tejava.service.OrderService;
+import com.sogong.tejava.domain.dto.*;
+import com.sogong.tejava.domain.dto.service.OrderService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +19,6 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 메뉴 아이템의 옵션/스타일(menu detail) 수정하기
-    @PatchMapping("/order/update/menu-detail")
-    @ApiOperation(value = "주문 이후에 메뉴의 옵션/스타일 수정", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능합니다.")
-    public ResponseEntity<ChangeMenuDetailResponseDTO> updateMenuOptions(@RequestBody ChangeMenuDetailDTO changeMenuDetailDTO) {
-
-        ChangeMenuDetailResponseDTO changeMenuDetailResponseDTO = orderService.updateMenuDetail(changeMenuDetailDTO);
-        return ResponseEntity.ok().body(changeMenuDetailResponseDTO);
-    }
-
     // 주문한 이후, 주문 내역에서 상태가 접수 대기중이 아닐 경우, 결제 취소하기 -> 주문내역에서도 삭제!
     @DeleteMapping("/order/cancel/orderId/{orderId}")
     @ApiOperation(value = "주문 이후에 결제 취소하기", notes = "주문된 메뉴의 상태가 접수 대기중일 때만 가능하며, 비회원이 아니라면 주문 횟수가 1 줄어듭니다.")
@@ -38,7 +29,7 @@ public class OrderController {
     }
 
     // 주문하기 : 결제 정보는 프론트에서만 다루고 db에 따로 저장하진 않는 것으로 결정
-    @PostMapping("/order/place-order") // TODO : 심플 스타일을 선택하는 경우, 와인이 포함되어 있다면 플라스틱 와인잔이 제공됨을 명시해야 한다 !
+    @PostMapping("/order/place-order")
     @ApiOperation(value = "주문하기", notes = "회원의 주문 내역과 직원 인터페이스 화면의 주문 목록에도 추가되며, 주문 횟수가 1 늘어납니다.")
     public ResponseEntity<OrderResponseDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
 
@@ -48,10 +39,10 @@ public class OrderController {
 
     // 회원의 주문 내역 반환하기
     @GetMapping("/order/history")
-    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
-    public ResponseEntity<List<OrderHistoryResponseDTO>> showOrderHistory(HttpServletRequest request) {
+    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 메뉴 리스트로 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
+    public ResponseEntity<List<OrderHistoryResponseMenuDTO>> showOrderHistoryWithMenus(HttpServletRequest request) {
 
-        return ResponseEntity.ok().body(orderService.showOrderHistory(request));
+        return ResponseEntity.ok().body(orderService.showOrderHistoryWithMenus(request));
     }
 
     @GetMapping("/order/showAllMenus")
@@ -76,5 +67,12 @@ public class OrderController {
 
         List<StyleDTO> styleList = orderService.showAllStyles(menuId);
         return ResponseEntity.ok().body(styleList);
+    }
+
+    @GetMapping("/order/history/orders")
+    @ApiOperation(value = "주문 내역 보기", notes = "회원의 주문 내역을 주문 리스트로 반환합니다. 비회원의 경우, 아무것도 반환하지 않습니다.")
+    public ResponseEntity<List<OrderHistoryDTO>> showOrderHistory(HttpServletRequest request) {
+
+        return ResponseEntity.ok().body(orderService.showOrderHistoryWithOrders(request));
     }
 }

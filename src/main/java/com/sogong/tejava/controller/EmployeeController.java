@@ -1,7 +1,10 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.*;
-import com.sogong.tejava.service.EmployeeService;
+import com.sogong.tejava.domain.dto.ChangeOrderStatusDTO;
+import com.sogong.tejava.domain.dto.ChangeStockInfoDTO;
+import com.sogong.tejava.domain.dto.GetOrderListResponseDTO;
+import com.sogong.tejava.domain.dto.StockItemDTO;
+import com.sogong.tejava.domain.dto.service.EmployeeService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +24,9 @@ public class EmployeeController {
     // 주문 현황 보여주기
     @GetMapping("/employee/orders")
     @ApiOperation(value = "주문 현황 조회하기", notes = "직원 인터페이스의 홈화면에서 접수된 주문 목록을 확인할 수 있습니다.")
-    public ResponseEntity<List<GetOrderListResponseDTO>> showOrders(HttpServletRequest request) {
+    public ResponseEntity<GetOrderListResponseDTO> showOrders(HttpServletRequest request) {
 
-        List<GetOrderListResponseDTO> orderList = employeeService.getOrderList(request);
-        return ResponseEntity.ok().body(orderList);
+        return ResponseEntity.ok().body(employeeService.getOrderList(request));
     }
 
     // 주문 상태 바꾸기 (pending, cooking, delivering, completed)

@@ -1,10 +1,9 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.LoginDTO;
-import com.sogong.tejava.dto.UserDTO;
-import com.sogong.tejava.service.UserService;
+import com.sogong.tejava.domain.dto.LoginDTO;
+import com.sogong.tejava.domain.dto.UserDTO;
+import com.sogong.tejava.domain.dto.service.UserService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

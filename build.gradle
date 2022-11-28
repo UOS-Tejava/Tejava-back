@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'java'
+//    id "com.moowork.node" version "1.3.1"
 }
 
 group = 'com.sogong'
@@ -13,6 +14,18 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+
+//task appNpmInstall(type: NpmTask) {
+//    workingDir = file("frontend")
+//    args = ["start", "build", "test", "eject"]
+//}
+//task copyWebApp(type: Copy) {
+//    from 'frontend/build'
+//    into "build/resources/main/static"
+//}
+//copyWebApp.dependsOn(appNpmInstall)
+//compileJava.dependsOn(copyWebApp)
+
 
 repositories {
     mavenCentral()
@@ -37,8 +50,4 @@ dependencies {
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }

@@ -1,7 +1,7 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.RegisterDTO;
-import com.sogong.tejava.service.UserService;
+import com.sogong.tejava.domain.dto.RegisterDTO;
+import com.sogong.tejava.domain.dto.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

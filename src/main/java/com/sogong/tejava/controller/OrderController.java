@@ -1,7 +1,7 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.*;
-import com.sogong.tejava.service.OrderService;
+import com.sogong.tejava.domain.dto.*;
+import com.sogong.tejava.domain.dto.service.OrderService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

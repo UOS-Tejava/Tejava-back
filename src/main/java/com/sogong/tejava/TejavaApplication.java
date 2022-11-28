@@ -1,6 +1,6 @@
 package com.sogong.tejava;
 
-import com.sogong.tejava.util.ApplicationProperties;
+import com.sogong.tejava.validate.config.util.ApplicationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

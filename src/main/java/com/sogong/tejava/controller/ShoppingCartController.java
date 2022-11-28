@@ -1,7 +1,9 @@
 package com.sogong.tejava.controller;
 
-import com.sogong.tejava.dto.*;
-import com.sogong.tejava.service.CartService;
+import com.sogong.tejava.domain.dto.AddToCartDTO;
+import com.sogong.tejava.domain.dto.ChangeMenuDetailDTO;
+import com.sogong.tejava.domain.dto.MenuDTO;
+import com.sogong.tejava.domain.dto.service.CartService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -170,7 +170,7 @@ public class UserService {
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");
                 }
             }
-        } else {
+        } else { // 일반 회원의 경우
             if (loginMember.getUid().equals(Const.TEST_USER_UID)) { // 일반 사용자의 경우
                 if (!password.equals(Const.TEST_PWD)) { // 테스트 계정의 경우
                     throw new IllegalArgumentException("아이디 또는 비밀번호를 잘못 입력하셨습니다.");

@@ -63,10 +63,6 @@ sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-po
 
 This project utilize swagger Specification 2.0 and Swagger UI for communication with client.
 
-Below is our project's HTTP REST API server swagger UI endpoint.
-
-<http://43.200.93.146:8080/swagger-ui/#/>
-
 ![스크린샷 2022-11-18 오전 1 31 38](https://user-images.githubusercontent.com/43805087/202503174-f3545e82-da6d-451c-bfdb-110830da54a1.png)
 ![스크린샷 2022-11-18 오전 1 31 47](https://user-images.githubusercontent.com/43805087/202503259-1df2c0bc-1600-4717-bdd9-dec4a03007b2.png)
 
